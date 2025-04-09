@@ -61,7 +61,9 @@ void checarCliqueTelaConfirmar() {
       mouseY > botaoY && mouseY < botaoY + botaoAlt) {
     println("Continuar com referenciamento clicado!");
     telaConfirmar   = false;
-    // Exemplo: avança para a tela de controle de pipetagem
+    // Inicia o setup da "telaPipetagem" antes de mudar de tela
+    setupTelaPipetagem();
+    
     telaPipetagem = true;
   }
 }

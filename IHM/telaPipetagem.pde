@@ -1,21 +1,26 @@
-// ============================================================================
-// File: ControlePipetagem.pde
-// Description: This file contains the code for the "Controle de Pipetagem."
-//              Also handles the logic to start/pause/stop pipetting.
-// ============================================================================
-
 // -----------------------------------------------------------------------------
 //  TELA CONTROLE PIPETAGEM
 // -----------------------------------------------------------------------------
 //  -> desenhaTelaPipetagem()
 //  -> mousePressedPipetagem()
 // -----------------------------------------------------------------------------
-// Global vars used might include:
-//   boolean telaPipetagem, pipetagemAtiva, pipetagemPausada, etc.
-//   int pontosColeta, pontosDispensa, tempoRestante
-//   color azulEscuro, branco, brancoBege, azulClaro, cinzaMedio, ...
-//   Functions: desenhaBotao(...), desenhaSecaoPontos(...), desenhaTriangulo(...)
-// -----------------------------------------------------------------------------
+
+// UI elements
+Button AddColeta, AddDispensa, iniciaPip, pausaPip, pararPip;
+
+void setupTelaPipetagem() {
+  // "+ Ponto de coleta"
+  //color corMaisPonto = (pipetagemAtiva) ? cinzaMedio : azulClaro;
+  AddColeta = new Button(true, 80, 260, 140, 80, "+ Ponto de \ncoleta", azulClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  AddDispensa = new Button(true, 370, 350, 140, 80, "+ Ponto de \ndispensa", azulClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  
+  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  desenhaTriangulo(870, 440, 40, branco);
+  
+  pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+}
+
 
 void desenhaTelaPipetagem() {
   // Ex: exibe um logo no topo direito, se existente
@@ -36,23 +41,26 @@ void desenhaTelaPipetagem() {
   fill(0);
   text("manual", 180, 200);
 
-  // "+ Ponto de coleta"
-  color corMaisPonto = (pipetagemAtiva) ? cinzaMedio : azulClaro;
-  desenhaBotao(80, 260, 140, 80, "+ Ponto de \ncoleta", corMaisPonto, branco);
+  // Desenha botao
+  AddColeta.draw();
+  AddDispensa.draw();
+  iniciaPip.draw();
+  pausaPip.draw();
+  pararPip.draw();
 
   // Seção total de coleta
   desenhaSecaoPontos(250, 260, "Pontos totais de \ncoleta", pontosColeta);
 
   // "+ Ponto de dispensa"
   desenhaSecaoPontos(80, 350, "Pontos totais de \ndispensa", pontosDispensa);
-  desenhaBotao(370, 350, 140, 80, "+ Ponto de \ndispensa", corMaisPonto, branco);
 
-  // Botões Pausar / Parar
-  color corPausa = (pipetagemAtiva && !pipetagemPausada) ? azulEscuro : cinzaMedio;
-  desenhaBotao(620, 100, 140, 150, "|| \nPausa \npipetagem", corPausa, branco);
+  // Botões Pausar
+  //color corPausa = (pipetagemAtiva && !pipetagemPausada) ? azulEscuro : cinzaMedio;
+  //desenhaBotao(620, 100, 140, 150, "|| \nPausa \npipetagem", corPausa, branco);
 
-  color corPara = pipetagemAtiva ? azulEscuro : cinzaMedio;
-  desenhaBotao(790, 100, 140, 150, "Parar \npipetagem", corPara, branco);
+  // Botão Parar
+  //color corPara = pipetagemAtiva ? azulEscuro : cinzaMedio;
+  //desenhaBotao(790, 100, 140, 150, "Parar \npipetagem", corPara, branco);
 
   // Caixa para tempo restante
   fill(branco);
@@ -69,49 +77,95 @@ void desenhaTelaPipetagem() {
   textSize(fontSubtitulo);
   text(tempoRestante + " s", 900, 320);
 
-  // Botão INICIAR PIPETAGEM
-  color corBotao = pipetagemAtiva ? cinzaMedio : azulEscuro;
-  desenhaBotao(600, 380, 350, 120, "INICIAR \nPIPETAGEM", corBotao, branco);
-  desenhaTriangulo(870, 440, 40, branco);
 }
 
-// Mouse handler for pipetagem
+//----------------------------------------------------------------------------------------
+//                           'Mouse pressed' for tela pipetagem 
+//----------------------------------------------------------------------------------------
 void mousePressedPipetagem() {
-  // + Ponto de coleta
-  if (!pipetagemAtiva && mouseX > 80 && mouseX < 220 && mouseY > 230 && mouseY < 310) {
-    println("+ Ponto de coleta clicado!");
-    pontosColeta++;
+  if (AddColeta.isMouseOver()) {
+    AddColeta.isPressed = true;
+    return;
   }
-  // + Ponto de dispensa
-  else if (!pipetagemAtiva && mouseX > 370 && mouseX < 510 && mouseY > 320 && mouseY < 400) {
-    println("+ Ponto de dispensa clicado!");
-    pontosDispensa++;
+  else if (AddDispensa.isMouseOver()) {
+    AddDispensa.isPressed = true;
+    return;
   }
-  // Iniciar pipetagem
-  else if (!pipetagemAtiva && mouseX > 600 && mouseX < 950 && mouseY > 350 && mouseY < 500) {
-    println("INICIAR PIPETAGEM clicado!");
-    iniciarPipetagem(); // see below
+  else if (iniciaPip.isMouseOver()) {
+    iniciaPip.isPressed = true;
+    return;
   }
-  // Pausa
-  else if (pipetagemAtiva && mouseX > 600 && mouseX < 740 && mouseY > 50 && mouseY < 250) {
-    println("PAUSA PIPETAGEM clicado!");
-    pausarPipetagem(); // see below
+  else if (pausaPip.isMouseOver() && pipetagemAtiva) {
+    pausaPip.isPressed = true;
+    return;
   }
-  // Parar
-  else if (pipetagemAtiva && mouseX > 790 && mouseX < 930 && mouseY > 50 && mouseY < 250) {
-    println("PARAR PIPETAGEM clicado!");
-    pararPipetagem();  // see below
+  else if (pararPip.isMouseOver() && (pipetagemAtiva || pipetagemPausada)) {
+    pararPip.isPressed = true;
+    return;
   }
-  // "Pontos totais de coleta" -> vai para a tela de movimentação manual
   else if (mouseX > 250 && mouseX < 510 && mouseY > 260 && mouseY < 340) {
-    println("Clicou em 'Pontos totais de coleta' - indo para telaPontosColeta.");
+    pressedPontosTotaisColeta = true;
+  }
+}
+
+//----------------------------------------------------------------------------------------
+//                           'Mouse released' for tela pipetagem 
+//----------------------------------------------------------------------------------------
+void mouseReleasedPipetagem() {
+  if (AddColeta.isPressed) {
+    AddColeta.isPressed = false;
+    
+    setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
+    
+    // Mudança de telas
     telaPipetagem = false;
-    setupTelaPontosColeta();
     telaPontosColeta = true;
   }
+  
+  else if(AddDispensa.isPressed){
+    AddDispensa.isPressed = false;
+    
+    println("Ponto de dispensa clicado");
+    //pontosDispensa++;
+  }
+  
+  else if(iniciaPip.isPressed) {
+     pipetagemAtiva = true;
+     pipetagemPausada = false;
+     
+     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
+     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
+     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
+     println("teste botao inciar");
+  }
+  
+  else if(pausaPip.isPressed){
+      pipetagemAtiva = false;
+      pipetagemPausada = true;
+     
+     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
+     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);       
+     println("teste botao pausar");
+  }
+  
+  else if (pararPip.isPressed){
+    pararPip.isPressed = false;
+    
+    pipetagemAtiva = false;
+    pipetagemPausada = false;
+    tempoRestante = 50;
+    
+    pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
+    pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);     
+    println("Parar pipetadora");
+  }
+  
 }
-
-// Funções de controle
+//----------------------------------------------------------------------------------------
+//                                 Funções de controle
+//----------------------------------------------------------------------------------------
 void iniciarPipetagem() {
   pipetagemAtiva   = true;
   pipetagemPausada = false;

@@ -23,7 +23,7 @@ boolean xyLocked = false;
 boolean zLocked  = false;
 
 // UI elements
-Button addButton, deleteButton, editButton, lockXYButton, lockZButton;
+Button addButton, deleteButton, editButton, lockXYButton, lockZButton, z_plus, z_minus;
 SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 
@@ -52,72 +52,6 @@ class PontoColeta {
   String toString() {
     // e.g. 'Ponto 01 - 3ml' plus coordinates
     return nome + " - " + volume + "ml";
-  }
-}
-
-class Button {
-  float x, y, w, h;
-  String label;
-  color bgColor, textColor;
-  PImage icon; // optional image for the button
-  
-  boolean isSelected = false; // toggles color if 'active'
-  boolean isPressed  = false; // darkens color while pressed
-  
-  // Constructor for text-based buttons
-  Button(float x, float y, float w, float h, 
-         String label, color bgColor, color textColor) {
-    this.x = x; 
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.label = label;
-    this.bgColor = bgColor;
-    this.textColor = textColor;
-    this.icon = null; // no icon by default
-  }
-  
-  // Constructor for icon-based buttons
-  Button(float x, float y, float w, float h, 
-         PImage icon, color bgColor) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.icon = icon;
-    this.bgColor = bgColor;
-    this.textColor = color(255); // default text color (unused if icon is present)
-    this.label = "";
-  }
-  
-  void draw() {
-    color currentBg = bgColor;
-    if (isPressed) {
-      currentBg = cinzaEscuro; // darken if pressed
-    }
-    else if (isSelected) {
-      currentBg = azulClaro;  // highlight if selected
-    }
-    
-    fill(currentBg);
-    rect(x, y, w, h, 8);
-    
-    if (icon != null) {
-      // Center the icon inside the button
-      float iconX = x + (w - icon.width) / 2;
-      float iconY = y + (h - icon.height) / 2;
-      image(icon, iconX, iconY);
-    } else {
-      fill(textColor);
-      textSize(fontBotao);
-      textAlign(CENTER, CENTER);
-      text(label, x + w/2, y + h/2);
-    }
-  }
-  
-  boolean isMouseOver() {
-    return (mouseX >= x && mouseX <= x + w && 
-            mouseY >= y && mouseY <= y + h);
   }
 }
 
@@ -158,24 +92,29 @@ void botao_direcional(float x, float y, float raioMaior, float raioMenor) {
 // -----------------------------------------------------------------------------
 void setupTelaPontosColeta() {
   // Create UI elements (positions approximate)
-  addButton    = new Button(width - 327, height - 180, 80, 80, addicon,  azulEscuro);
-  editButton   = new Button(width - 227, height - 180, 80, 80, editpen,  azulEscuro);
-  deleteButton = new Button(width -  127, height - 180, 80, 80, trash,  azulEscuro);
+  addButton    = new Button(true, width - 327, height - 180, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  editButton   = new Button(true, width - 227, height - 180, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  deleteButton = new Button(true, width -  127, height - 180, 80, 80, trash,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
   
   // Lock buttons
-  lockXYButton = new Button(120, height - 120, 120, 40, "Lock XY", cinzaMedio, branco);
-  lockZButton  = new Button(260, height - 120, 120, 40, "Lock Z",  cinzaMedio, branco);
+  lockXYButton = new Button(true, 120, height - 120, 120, 40, "Lock XY", cinzaMedio, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  lockZButton  = new Button(true, 260, height - 120, 120, 40, "Lock Z",  cinzaMedio, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
-  scrollUpButton   = new Button(width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco);
-  scrollDownButton = new Button(width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco);
+  scrollUpButton   = new Button(true, width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollDownButton = new Button(true, width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
   // Initialize precision selector using the global precisionLabels array
   color[] precisionColors = {verdeBotao, verdeBotao, verdeBotao};
   precisionSelector = new SegmentedButton(100, 30, 300, 40, precisionLabels, precisionColors, azulEscuro);
   precisionSelector.selectedIndex = 0;
   
-  // Build the direction pad
+  // Draw the direction pad (Buttons for XY axis)
   botao_direcional(250, 300, 150, 80);
+  
+  // Draw the Buttons for the Z axis
+  z_plus = new Button(true, 350, height - 60, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_minus = new Button(true, 350, height - 200, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  
 }
 
 // -----------------------------------------------------------------------------
@@ -185,7 +124,6 @@ void desenhaTelaPontosColeta() {
   background(branco); 
   
   // 'Voltar' button (top-left). This uses a global function from Globals
-  desenhaBotaoVoltar(width - 30, 25, 40);
   
   // 1) Draw the precision selector
   precisionSelector.draw();
@@ -238,6 +176,14 @@ void desenhaTelaPontosColeta() {
   // 8) Draw Lock XY / Lock Z buttons
   lockXYButton.draw();
   lockZButton.draw();
+  
+  // 9) Draw backButton 
+  backButton.draw();
+  
+  // 10) Draw Z buttons
+  z_plus.draw();
+  z_minus.draw();
+  
 }
 
 // -----------------------------------------------------------------------------
@@ -300,25 +246,17 @@ void drawPointsList() {
 }
 
 // -----------------------------------------------------------------------------
-// MOUSE PRESSED logic (called from global mousePressed() if telaPontosColeta==true)
+//                               MOUSE PRESSED
 // -----------------------------------------------------------------------------
 void mousePressedTelaMovimentacaoManual() {
-  // 0) Check if clicked on back button
-  if (dist(mouseX, mouseY, width - 50, 50) < 20) {
-    telaPontosColeta = false;
-    telaPipetagem = true;
+  // 1) Check if clicked on back button
+  if (backButton.isMouseOver()) {
+    backButton.isPressed = true;
     return;
   }
   
   // Check precision selector
   precisionSelector.mousePressed();
-  
-  // 1) Back button (Voltar)
-  if (dist(mouseX, mouseY, width - 30, 25) < 20) {
-    telaPontosColeta = false;
-    telaPipetagem    = true;
-    return;
-  }
   
   // 2) Direction pad segments
   for (int i = 0; i < 4; i++) {
@@ -369,6 +307,7 @@ void mousePressedTelaMovimentacaoManual() {
   // 7) Action buttons: add, edit, delete
   if (addButton.isMouseOver()) {
     addButton.isPressed = true;
+    pontosColeta++;
     return;
   }
   if (editButton.isMouseOver()) {
@@ -379,10 +318,24 @@ void mousePressedTelaMovimentacaoManual() {
     deleteButton.isPressed = true;
     return;
   }
+  
+  // 8) Button for the Z axis
+  if (z_plus.isMouseOver()) {
+    z_plus.isPressed = true;
+    println("botao Z+");
+    return;
+  }
+  if (z_minus.isMouseOver()){
+    z_minus.isPressed = true;
+     println("botao Z-");
+     return;
+  }
+  
+  
 }
 
 // -----------------------------------------------------------------------------
-// MOUSE RELEASED logic (called from global mouseReleased() if telaPontosColeta==true)
+//                               MOUSE RELEASED
 // -----------------------------------------------------------------------------
 void mouseReleasedTelaMovimentacaoManual() {
   // 0) Handle precision selector
@@ -460,6 +413,23 @@ void mouseReleasedTelaMovimentacaoManual() {
     }
     deleteButton.isPressed = false;
   }
+  
+  // 5) Back Button
+  if (backButton.isPressed){
+    backButton.isPressed = false;
+    
+    telaPontosColeta = false;
+    telaPipetagem = true;
+  }
+  
+  // 6) Button for Z axis
+  if (z_plus.isPressed){
+    z_plus.isPressed = false;
+  }
+  if (z_minus.isPressed) {
+   z_minus.isPressed = false; 
+  }
+  
 }
 
 // -----------------------------------------------------------------------------
@@ -476,6 +446,7 @@ void deleteSelectedPoints() {
   for (int i = listaPontos.size() - 1; i >= 0; i--) {
     if (listaPontos.get(i).selected) {
       listaPontos.remove(i);
+      pontosColeta--;
     }
   }
   

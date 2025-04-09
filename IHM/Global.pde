@@ -25,16 +25,22 @@ int fontTitulo    = 50;
 int fontSubtitulo = 17;
 int fontBotao     = 20;
 
-// Booleans controlling screens
+// Booleans of buttons
 boolean telaInicio         = true;
 boolean telaReferenciar    = false;
 boolean telaPipetagem      = false;
 boolean telaPontosColeta   = false;
 boolean telaConfirmar      = false;
+boolean pressedPontoColeta = false;
+boolean pressedPontoDispensa = false;
+boolean pressedIniciarPipetagem = false;
+boolean pressedPausa = false;
+boolean pressedParar = false;
+boolean pressedPontosTotaisColeta = false;
 
 // Variaveis globais
-int pontosColeta   = 1;
-int pontosDispensa = 1;
+int pontosColeta   = 0;
+int pontosDispensa = 0;
 int tempoRestante  = 50;
 boolean pipetagemAtiva   = false;
 boolean pipetagemPausada = false;
@@ -49,13 +55,12 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 
 // Images / Shapes
-PImage homeXY;
-PImage homeZ;
-PImage logo;
-PImage trash;
-PImage editpen;
-PImage addicon;
+PImage homeXY, homeZ, logo, trash, editpen, addicon, backIcon;
 PShape iconeXY;
+
+// Botão voltar 
+Button backButton;
+
 // ------------------ SETTINGS & SETUP ------------------
 void settings() {
   size(janelaLargura, janelaAltura, P2D);
@@ -88,6 +93,12 @@ void setup() {
   addicon = loadImage("addicon.png");
   addicon.resize(50,0);
   
+  backIcon = loadImage("backIcon.png");
+  backIcon.resize(25,0);
+  
+  // Botão voltar
+  backButton = new Button(false, width - 30, 35, 40, 40, backIcon, azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+    
   // Any array initializations
   inicializaListaPontosManual();
 
@@ -156,12 +167,22 @@ void mouseReleased() {
     mouseReleasedTelaMovimentacaoManual();
   }
 
-  // Example:
-  // else if (telaPipetagem) {
-  //   mouseReleasedPipetagem(); 
-  // }
-  // ... add more if you want press+release on those screens
+  else if (telaPipetagem) {
+     mouseReleasedPipetagem(); 
+  }
   
+// else if (telaInicio) {
+//   mouseReleasedInicio();
+//}
+
+// else if (telaReferenciar) {
+//   mouseReleasedRef();
+//}
+
+// else 'if' (telaReferenciarI2C) {
+//   mouseReleasedRefI2C();
+//}
+
 }
 
 // ------------------ FUNCOES GLOBAIS ------------------
@@ -200,7 +221,7 @@ void desenhaBotaoVoltar(float cx, float cy, float diameter) {
            cx + arrowSize/2, cy + arrowSize);
 }
 
-//4. Classe "Botao precisao" 
+// 4. Classe "Botao precisao" 
 class SegmentedButton {
   float x, y, w, h;
   String[] labels;
@@ -306,5 +327,101 @@ class SegmentedButton {
               + ", label=" + labels[selectedIndex] + ", movSpeed=" + movSpeed);
     }
     pressedIndex = -1;
+  }
+}
+
+// 5. Classe botao
+class Button {
+  float x, y, w, h;
+  String label;
+  color bgColor, textColor;
+  PImage icon; // optional image for the button
+  
+  boolean isSelected = false; // toggles color if 'active'
+  boolean isPressed  = false; // darkens color while pressed
+  
+  boolean square;
+  
+  // Constructor for text-based buttons
+  Button(boolean square, float x, float y, float w, float h,  // (square?, x, y, w, h, label, bgColor, textcolor)
+         String label, color bgColor, color textColor) {
+    this.x = x; 
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.label = label;
+    this.bgColor = bgColor;
+    this.textColor = textColor;
+    this.square = square;
+    this.icon = null; // no icon by default
+  }
+  
+  // Constructor for icon-based buttons
+  Button(boolean square, float x, float y, float w, float h, // (square?, x, y, w, h, icon, bgColor)
+         PImage icon, color bgColor) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.icon = icon;
+    this.bgColor = bgColor;
+    this.textColor = color(255); // default text color (unused if icon is present)
+    this.square = square;
+    this.label = "";
+  }
+  
+void draw() {
+  color currentBg = bgColor;
+  if (isPressed) {
+    currentBg = cinzaEscuro; // darken if pressed
+  }
+  else if (isSelected) {
+    currentBg = azulClaro;  // highlight if selected
+  }
+  
+  fill(currentBg);
+  if (square) {
+    rect(x, y, w, h, 8);
+    
+    // Centraliza icone para o retangulo
+    if (icon != null) {
+      float iconX = x + (w - icon.width) / 2;
+      float iconY = y + (h - icon.height) / 2;
+      image(icon, iconX, iconY);
+    } else {
+      fill(textColor);
+      textSize(fontBotao);
+      textAlign(CENTER, CENTER);
+      text(label, x + w/2, y + h/2);
+    }
+  } else {
+    // Centraliza icone em elipses
+    ellipse(x, y, w, h);
+    
+    if (icon != null) {
+      float iconX = x - icon.width / 2;
+      float iconY = y - icon.height / 2;
+      image(icon, iconX, iconY);
+    } else {
+      fill(textColor);
+      textSize(fontBotao);
+      textAlign(CENTER, CENTER);
+      text(label, x, y);
+    }
+  }
+}
+  
+boolean isMouseOver() {
+  if (square) {
+    return (mouseX >= x && mouseX <= x + w && 
+            mouseY >= y && mouseY <= y + h);
+  } else {
+    float dx = mouseX - x;
+    float dy = mouseY - y;
+    
+    float a = w/2;
+    float b = h/2;
+    return ((dx*dx)/(a*a) + (dy*dy)/(b*b)) <= 1;
+    }
   }
 }
