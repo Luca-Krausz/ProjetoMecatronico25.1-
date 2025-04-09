@@ -1,14 +1,3 @@
-// ============================================================================
-// File: PontosColeta.pde
-// Description: Screen for manually controlling the pipettor and marking points
-//              to define coordinate + volume. No keyPressed is used now.
-//              All user actions are handled by mouse press / release on a
-//              7" touchscreen.
-// ============================================================================
-
-// -----------------------------------------------------------------------------
-// Screen-specific data
-// -----------------------------------------------------------------------------
 int[] coordenadas = {0, 0, 0};    // X, Y, Z coordinates
 ArrayList<PontoColeta> listaPontos = new ArrayList<PontoColeta>();
 
@@ -23,7 +12,7 @@ boolean xyLocked = false;
 boolean zLocked  = false;
 
 // UI elements
-Button addButton, deleteButton, editButton, lockXYButton, lockZButton, z_plus, z_minus;
+Button addButton, deleteButton, editButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
 SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 
@@ -112,8 +101,12 @@ void setupTelaPontosColeta() {
   botao_direcional(250, 300, 150, 80);
   
   // Draw the Buttons for the Z axis
-  z_plus = new Button(true, 350, height - 60, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  z_minus = new Button(true, 350, height - 200, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_plus = new Button(true, 500, height - 490, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_minus = new Button(true, 500, height - 192, 95, 95, "Z-", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_home = new Button(true, 500, height - 341, 95, 95, homeZ, azulEscuro); //(square?, x, y, w, h, icon, bgColor)
+  
+  // Draw the Button for the home XY
+  xy_home = new Button(false, 250, 300, 100, 100, homeXY, azulEscuro);
   
 }
 
@@ -146,11 +139,12 @@ void desenhaTelaPontosColeta() {
   text("+Y", 247, 186);
   text("-Y", 247, 414);
   
-  // 4) Center circle with placeholder icon
-  fill(azulEscuro);
+  // 4) Draw the button home for axis x & y
+  /*fill(azulEscuro);
   ellipse(250, 300, 100, 100);
   fill(branco);
-  image(homeXY, 132, 235);
+  image(homeXY, 132, 235);*/
+  xy_home.draw();
   
   // 5) Side panel for 'Pontos adicionados'
   fill(brancoBege);
@@ -183,6 +177,7 @@ void desenhaTelaPontosColeta() {
   // 10) Draw Z buttons
   z_plus.draw();
   z_minus.draw();
+  z_home.draw();
   
 }
 
@@ -322,15 +317,22 @@ void mousePressedTelaMovimentacaoManual() {
   // 8) Button for the Z axis
   if (z_plus.isMouseOver()) {
     z_plus.isPressed = true;
-    println("botao Z+");
-    return;
+   return;
   }
   if (z_minus.isMouseOver()){
-    z_minus.isPressed = true;
-     println("botao Z-");
-     return;
+     z_minus.isPressed = true;
+    return;
+  }
+  if (z_home.isMouseOver()){
+    z_home.isPressed = true;
+   return;
   }
   
+  // 9) Button home for X & Y axis
+  if (xy_home.isMouseOver()){
+   xy_home.isPressed = true;
+   return;
+  }
   
 }
 
@@ -425,9 +427,30 @@ void mouseReleasedTelaMovimentacaoManual() {
   // 6) Button for Z axis
   if (z_plus.isPressed){
     z_plus.isPressed = false;
+    if (!zLocked){
+      coordenadas[2] += movSpeed;
+    }
   }
   if (z_minus.isPressed) {
-   z_minus.isPressed = false; 
+   z_minus.isPressed = false;
+   if (!zLocked){
+     coordenadas[2] -= movSpeed;
+     }
+  }
+  if (z_home.isPressed){
+   z_home.isPressed = false; 
+   if (!zLocked){
+     coordenadas[2] = 0;
+    }
+  }
+  
+  // 7) Button Home for X & Y axis 
+  if (xy_home.isPressed){
+   xy_home.isPressed = false;
+   if (!xyLocked){
+    coordenadas[0] = 0;
+    coordenadas[1] = 0; 
+   }
   }
   
 }
@@ -471,7 +494,7 @@ void editSelectedPoints() {
     }
   }
   println("Editing points: " + selectedPoints);
-  // Optionally switch screens:
+  // Trocar para a tela de editar pontos 
   // telaPontosColeta = false;
   // telaEditarPontos = true;
 }

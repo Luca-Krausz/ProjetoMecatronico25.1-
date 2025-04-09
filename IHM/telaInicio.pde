@@ -25,6 +25,24 @@
 // which the other PDEs reference.
 // -----------------------------------------------------------------------------
 
+// UI elements
+Button  botao_tutorial, modo_manual, modo_automatico, modo_hist;
+
+ // Definindo as características dos botões de "modo"
+
+void setupTelaInicio() {
+   if (inicio_config == false) {
+   inicio_config = true;
+   }
+   
+   botao_tutorial =  new Button(true, 80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);                                               // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_manual =     new Button(true, 692, 250, 200, 40, "Manual", azulEscuro, branco);                                  // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_automatico = new Button(true, 692, 305, 200, 40, "Automático", azulEscuro, branco);     // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_hist =       new Button(true, 692, 360, 200, 40, "Histórico", azulEscuro, branco);  // (square?, x, y, w, h, label, bgColor, textcolor)
+  
+}
+
+
 void desenhaTelaInicio() {
   // Left side (white background)
   fill(branco);
@@ -43,67 +61,83 @@ void desenhaTelaInicio() {
   fill(brancoBege);
   rect(560, 0, 464, janelaAltura);
 
-  // "Tutorial" button (example) on the left side
-  desenhaBotao(80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);
-
   // Title on the right side
   textSize(28);
   fill(azulEscuro);
   textAlign(CENTER, TOP);
   text("Escolha o modo\nde operação", 560 + 464/2, 150);
+  
+  // Draw the buttons
+  botao_tutorial.draw();
+  modo_manual.draw();
+  modo_automatico.draw();
+  modo_hist.draw();
 
-  // Buttons (Manual, Automático, Histórico)
-  float botaoLarg   = 200;
-  float botaoAlt    = 40;
-  float botaoEspaco = 15;
-  float botaoX      = 560 + 464/2 - botaoLarg/2;
-  float botaoY      = 250;
-
-  desenhaBotao(botaoX, botaoY, botaoLarg, botaoAlt, "Manual", azulEscuro, branco);
-  desenhaBotao(botaoX, botaoY + botaoAlt + botaoEspaco, botaoLarg, botaoAlt, "Automático", azulEscuro, branco);
-  desenhaBotao(botaoX, botaoY + 2*(botaoAlt + botaoEspaco), botaoLarg, botaoAlt, "Histórico", azulEscuro, branco);
-
-  // "Tutorial" again, if you want it duplicated
-  desenhaBotao(80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);
 }
 
-
+//----------------------------------------------------------------------------------------
+//                           'Mouse pressed' for tela inicio
+//----------------------------------------------------------------------------------------
 void mousePressedInicio() {
-  // "Tutorial" button (coords: 80,350, size: 120x40)
-  if (mouseX > 80 && mouseX < 80 + 120 &&
-    mouseY > 350 && mouseY < 350 + 40) {
-    println("Botão TUTORIAL clicado!");
+  // Tutorial
+  if (botao_tutorial.isMouseOver()) {
+    botao_tutorial.isPressed = true;
+    println("ligou botao tut");
+    
   }
 
-  // Mode buttons (Manual, Automático, Histórico)
-  float botaoLarg   = 200;
-  float botaoAlt    = 40;
-  float botaoEspaco = 15;
-  float botaoX      = 560 + 464/2 - botaoLarg/2;
-  float botaoY      = 250;
-
   // Manual
-  if (mouseX > botaoX && mouseX < botaoX + botaoLarg &&
-    mouseY > botaoY && mouseY < botaoY + botaoAlt) {
-    println("Botão MANUAL clicado!");
-    telaInicio      = false;
-    telaReferenciar = true;  // For example, after "Início," you want to reference
-    // before controlling pipetting
+  else if (modo_manual.isMouseOver()) {
+    modo_manual.isPressed = true;
+    
   }
 
   // Automático
-  if (mouseX > botaoX && mouseX < botaoX + botaoLarg &&
-    mouseY > botaoY + (botaoAlt + botaoEspaco) &&
-    mouseY < botaoY + (botaoAlt + botaoEspaco) + botaoAlt) {
-    println("Botão AUTOMÁTICO clicado!");
-    // Not implemented yet
+  else if (modo_automatico.isMouseOver()) {
+    modo_automatico.isPressed = true;
+    
   }
 
   // Histórico
-  if (mouseX > botaoX && mouseX < botaoX + botaoLarg &&
-    mouseY > botaoY + 2*(botaoAlt + botaoEspaco) &&
-    mouseY < botaoY + 2*(botaoAlt + botaoEspaco) + botaoAlt) {
-    println("Botão HISTÓRICO clicado!");
-    // Not implemented yet
+  else if (modo_hist.isMouseOver()) {
+    modo_hist.isPressed = true;
+    
   }
+}
+
+//----------------------------------------------------------------------------------------
+//                           'Mouse released' for tela inicio
+//----------------------------------------------------------------------------------------
+
+void mouseReleasedInicio() {
+  println(botao_tutorial.isPressed);
+  if (botao_tutorial.isPressed) {
+     botao_tutorial.isPressed = false;
+     
+     println("Botão TUTORIAL clicado!");
+  }
+  
+  else if (modo_manual.isPressed) {
+    modo_manual.isPressed = false;
+    
+    telaInicio      = false;
+    telaReferenciar = true; 
+    println("Botão MANUAL clicado!");
+  }
+  
+  else if (modo_automatico.isPressed) {
+    modo_automatico.isPressed = false; 
+    
+    println("Botão AUTOMÁTICO clicado!");
+  }
+  
+  else if(modo_hist.isPressed) {
+   modo_hist.isPressed = false;
+   
+   println("Botão HISTÓRICO clicado!");
+  }
+  
+  
+  
+  
 }

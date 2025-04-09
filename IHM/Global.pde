@@ -44,6 +44,7 @@ int pontosDispensa = 0;
 int tempoRestante  = 50;
 boolean pipetagemAtiva   = false;
 boolean pipetagemPausada = false;
+boolean inicio_config = false;
 int movSpeed       = 1;  // 1mm, 10mm, 30mm
 
 // Shapes for the directional pad
@@ -111,6 +112,9 @@ void draw() {
 
   // Decide qual tela mostrar
   if (telaInicio) {
+    if (!inicio_config){
+     setupTelaInicio(); 
+    }
     desenhaTelaInicio();
   }
   else if (telaReferenciar) {
@@ -142,6 +146,7 @@ void draw() {
 void mousePressed() {
   
   if (telaInicio) {
+    println("to no inicio");
     mousePressedInicio();
   }
   else if (telaReferenciar) {
@@ -161,32 +166,26 @@ void mousePressed() {
 // ------------------ MAIN MOUSERELEASED ------------------
 // Complement the press & release approach:
 void mouseReleased() {
-  
-  // If you want release logic for 'Inicio,' 'Referenciar,' etc. you can do so here:
+  // Colocar a tela para conseguir 
   if (telaPontosColeta) {
     mouseReleasedTelaMovimentacaoManual();
   }
-
   else if (telaPipetagem) {
      mouseReleasedPipetagem(); 
   }
-  
-// else if (telaInicio) {
-//   mouseReleasedInicio();
-//}
-
-// else if (telaReferenciar) {
-//   mouseReleasedRef();
-//}
-
-// else 'if' (telaReferenciarI2C) {
-//   mouseReleasedRefI2C();
-//}
-
+  else if (telaInicio) {
+     mouseReleasedInicio();
+  }
+  // else if (telaReferenciar) {
+  //   mouseReleasedRef();
+  // }
+  // else if (telaReferenciarI2C) {
+  //   mouseReleasedRefI2C();
+  // }
 }
-
-// ------------------ FUNCOES GLOBAIS ------------------
-
+//----------------------------------------------------------------------------------------
+//                                      FUNÇÕES GLOBAIS 
+//----------------------------------------------------------------------------------------
 // 1. Simple button
 void desenhaBotao(float x, float y, float w, float h,
                   String rotulo, color corFundo, color corTexto) {
