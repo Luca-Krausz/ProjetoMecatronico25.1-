@@ -1,30 +1,3 @@
-// ============================================================================
-// File: Inicio.pde
-// Description: This file contains the code for the "Tela de Início" of the
-//              Pipetadora Automática project.
-//              It references some global variables that should be declared
-//              in a common file (e.g., Globals.pde or Main.pde).
-// ============================================================================
-
-// -----------------------------------------------------------------------------
-//  TELA INICIO
-// -----------------------------------------------------------------------------
-//  -> desenhaTelaInicio()   : Renders the 'Início' screen
-//  -> mousePressedInicio()  : Handles clicks on the 'Início' screen
-// -----------------------------------------------------------------------------
-// The code below assumes you have global variables like:
-//   boolean telaInicio, telaReferenciar, etc.
-//   color azulEscuro, branco, brancoBege, etc.
-//   int fontTitulo, fontSubtitulo, fontBotao
-//   PImage logo
-//   and a function: desenhaBotao(...)
-// declared elsewhere (Globals.pde or a main PDE).
-//
-// If you want a fully self-contained file, you need to define them here,
-// but typically in Processing we keep shared code in one PDE file
-// which the other PDEs reference.
-// -----------------------------------------------------------------------------
-
 // UI elements
 Button  botao_tutorial, modo_manual, modo_automatico, modo_hist;
 
@@ -35,10 +8,10 @@ void setupTelaInicio() {
    inicio_config = true;
    }
    
-   botao_tutorial =  new Button(true, 80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);                                               // (square?, x, y, w, h, label, bgColor, textcolor)
-   modo_manual =     new Button(true, 692, 250, 200, 40, "Manual", azulEscuro, branco);                                  // (square?, x, y, w, h, label, bgColor, textcolor)
+   botao_tutorial =  new Button(true, 80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);    // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_manual =     new Button(true, 692, 250, 200, 40, "Manual", azulEscuro, branco);         // (square?, x, y, w, h, label, bgColor, textcolor)
    modo_automatico = new Button(true, 692, 305, 200, 40, "Automático", azulEscuro, branco);     // (square?, x, y, w, h, label, bgColor, textcolor)
-   modo_hist =       new Button(true, 692, 360, 200, 40, "Histórico", azulEscuro, branco);  // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_hist =       new Button(true, 692, 360, 200, 40, "Histórico", azulEscuro, branco);      // (square?, x, y, w, h, label, bgColor, textcolor)
   
 }
 
@@ -82,7 +55,6 @@ void mousePressedInicio() {
   // Tutorial
   if (botao_tutorial.isMouseOver()) {
     botao_tutorial.isPressed = true;
-    println("ligou botao tut");
     
   }
 
@@ -110,7 +82,6 @@ void mousePressedInicio() {
 //----------------------------------------------------------------------------------------
 
 void mouseReleasedInicio() {
-  println(botao_tutorial.isPressed);
   if (botao_tutorial.isPressed) {
      botao_tutorial.isPressed = false;
      
@@ -120,9 +91,9 @@ void mouseReleasedInicio() {
   else if (modo_manual.isPressed) {
     modo_manual.isPressed = false;
     
+    setupReferenciar();
     telaInicio      = false;
     telaReferenciar = true; 
-    println("Botão MANUAL clicado!");
   }
   
   else if (modo_automatico.isPressed) {

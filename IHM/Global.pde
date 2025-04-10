@@ -30,7 +30,7 @@ boolean telaInicio         = true;
 boolean telaReferenciar    = false;
 boolean telaPipetagem      = false;
 boolean telaPontosColeta   = false;
-boolean telaConfirmar      = false;
+boolean telaReferenciarI2C      = false;
 boolean pressedPontoColeta = false;
 boolean pressedPontoDispensa = false;
 boolean pressedIniciarPipetagem = false;
@@ -120,8 +120,8 @@ void draw() {
   else if (telaReferenciar) {
     desenhaTelaReferenciar();
   }
-  else if (telaConfirmar) {
-    desenhaTelaConfirmarReferenciamento();
+  else if (telaReferenciarI2C) {
+    desenhaRefI2C();
   }
   else if (telaPipetagem) {
     desenhaTelaPipetagem();
@@ -146,14 +146,13 @@ void draw() {
 void mousePressed() {
   
   if (telaInicio) {
-    println("to no inicio");
     mousePressedInicio();
   }
   else if (telaReferenciar) {
-    checarCliqueTelaReferenciar();
+    mousePressedReferenciar();
   }
-  else if (telaConfirmar) {
-    checarCliqueTelaConfirmar();
+  else if (telaReferenciarI2C) {
+    mousePressedRefI2C();
   }
   else if (telaPipetagem) {
     mousePressedPipetagem();
@@ -176,12 +175,12 @@ void mouseReleased() {
   else if (telaInicio) {
      mouseReleasedInicio();
   }
-  // else if (telaReferenciar) {
-  //   mouseReleasedRef();
-  // }
-  // else if (telaReferenciarI2C) {
-  //   mouseReleasedRefI2C();
-  // }
+  else if (telaReferenciar) {
+      mouseReleasedReferenciar();
+  }
+  else if (telaReferenciarI2C) {
+     mouseReleasedRefI2C();
+  }
 }
 //----------------------------------------------------------------------------------------
 //                                      FUNÇÕES GLOBAIS 

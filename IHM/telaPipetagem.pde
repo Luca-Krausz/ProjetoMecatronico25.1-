@@ -1,9 +1,6 @@
 // -----------------------------------------------------------------------------
 //  TELA CONTROLE PIPETAGEM
 // -----------------------------------------------------------------------------
-//  -> desenhaTelaPipetagem()
-//  -> mousePressedPipetagem()
-// -----------------------------------------------------------------------------
 
 // UI elements
 Button AddColeta, AddDispensa, iniciaPip, pausaPip, pararPip;

@@ -1,22 +1,17 @@
-// ============================================================================
-// File: Referenciar.pde
-// Description: This file contains the code for the "Tela de Referenciar."
-//              It draws a box prompting the user to reference the machine
-//              and handles clicks for "Referenciar" and "Voltar."
-// ============================================================================
+Button botao_ref, botao_voltar_ref;
 
-// -----------------------------------------------------------------------------
-//  TELA REFERENCIAR
-// -----------------------------------------------------------------------------
-//  -> desenhaTelaReferenciar() : Renders the Referenciar screen
-//  -> checarCliqueTelaReferenciar() : Handles clicks on this screen
-// -----------------------------------------------------------------------------
-// Assumes global variables like:
-//   boolean telaReferenciar, telaConfirmar, telaInicio, etc.
-//   color azulEscuro, branco, brancoBege, azulClaro, ...
-//   int fontTitulo, fontSubtitulo, fontBotao
-//   and a function: desenhaBotao(...)
-// -----------------------------------------------------------------------------
+// dimensões dos botões 
+float botaoX    = 390;
+float botaoY1   = 250;
+float botaoY2   = botaoY1 + 70;
+  
+void setupReferenciar(){
+  
+  botao_ref = new Button(true, botaoX, botaoY1, 250, 50, "Referenciar", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  botao_voltar_ref = new Button(true, botaoX, botaoY2, 250, 50, "Voltar", azulEscuro, branco);
+
+}
+
 
 void desenhaTelaReferenciar() {
   background(branco);
@@ -24,8 +19,8 @@ void desenhaTelaReferenciar() {
   // Caixa central
   float caixaLarg = 600;
   float caixaAlt  = 400;
-  float caixaX    = (width - caixaLarg)/2;
-  float caixaY    = (height - caixaAlt)/2;
+  float caixaX    = (width - 600)/2;
+  float caixaY    = (height - 400)/2;
 
   fill(brancoBege);
   rect(caixaX, caixaY, caixaLarg, caixaAlt, 16);
@@ -35,48 +30,53 @@ void desenhaTelaReferenciar() {
   fill(azulEscuro);
   textAlign(CENTER, CENTER);
   text("Referencie antes de começar", caixaX + caixaLarg / 2, caixaY + 100);
-
+  
   // Botões
-  float botaoLarg = 250;
-  float botaoAlt  = 50;
-  float botaoX    = caixaX + (caixaLarg - botaoLarg) / 2;
-  float botaoY1   = caixaY + 150;
-  float botaoY2   = caixaY + 220;
-
-  desenhaBotao(botaoX, botaoY1, botaoLarg, botaoAlt, "Referenciar", azulClaro, branco);
-  desenhaBotao(botaoX, botaoY2, botaoLarg, botaoAlt, "Voltar",       azulClaro, branco);
+  botao_ref.draw();
+  botao_voltar_ref.draw();
 }
 
+// -----------------------------------------------------------------------------
+//                         Mouse Pressed Referenciar                
+// -----------------------------------------------------------------------------
+void mousePressedReferenciar() {
 
-void checarCliqueTelaReferenciar() {
-  // Coordenadas iguais às usadas em desenhaTelaReferenciar()
-  float caixaLarg = 600;
-  float caixaAlt  = 400;
-  float caixaX    = (width - caixaLarg)/2;
-  float caixaY    = (height - caixaAlt)/2;
-
-  float botaoLarg = 250;
-  float botaoAlt  = 50;
-  float botaoX    = caixaX + (caixaLarg - botaoLarg)/2;
-  float botaoY1   = caixaY + 150; // "Referenciar"
-  float botaoY2   = caixaY + 220; // "Voltar"
-
-  // Se clicou na área horizontal do botão
-  if (mouseX > botaoX && mouseX < botaoX + botaoLarg) {
-    // Botão "Referenciar"
-    if (mouseY > botaoY1 && mouseY < botaoY1 + botaoAlt) {
-      println("Referenciar clicado!");
-      // Por exemplo: sai desta tela e vai para a Tela de Confirmação
-      telaReferenciar = false;
-      telaConfirmar   = true;
+  // Botao "Referenciar"
+  if (botao_ref.isMouseOver()) {
+      botao_ref.isPressed = true;
+      return;
+      
+      //telaReferenciar = false;
+      //telaReferenciarI2C   = true;
     }
     // Botão "Voltar"
-    else if (mouseY > botaoY2 && mouseY < botaoY2 + botaoAlt) {
-      println("Voltar clicado!");
-      // Volta à Tela Inicio
-      telaReferenciar = false;
-      telaInicio      = true;
-      telaConfirmar   = false;
+    else if (botao_voltar_ref.isMouseOver()) {
+      botao_voltar_ref.isPressed = true;
     }
+    
+}
+
+// -----------------------------------------------------------------------------
+//                         Mouse Released Referenciar                
+// -----------------------------------------------------------------------------
+void mouseReleasedReferenciar(){
+ 
+  // Botao "Referenciar"
+  if (botao_ref.isPressed){
+   botao_ref.isPressed = false;
+   
+   setupRefI2C();
+   telaReferenciar = false;
+   telaReferenciarI2C   = true;
   }
+  
+  else if (botao_voltar_ref.isPressed){
+   botao_voltar_ref.isPressed = false;
+   
+   telaReferenciar = false;
+   telaInicio      = true;
+   telaReferenciarI2C   = false;
+  }
+  
+  
 }
