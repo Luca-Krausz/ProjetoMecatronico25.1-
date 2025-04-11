@@ -51,14 +51,6 @@ void desenhaTelaPipetagem() {
   // "+ Ponto de dispensa"
   desenhaSecaoPontos(80, 350, "Pontos totais de \ndispensa", pontosDispensa);
 
-  // Botões Pausar
-  //color corPausa = (pipetagemAtiva && !pipetagemPausada) ? azulEscuro : cinzaMedio;
-  //desenhaBotao(620, 100, 140, 150, "|| \nPausa \npipetagem", corPausa, branco);
-
-  // Botão Parar
-  //color corPara = pipetagemAtiva ? azulEscuro : cinzaMedio;
-  //desenhaBotao(790, 100, 140, 150, "Parar \npipetagem", corPara, branco);
-
   // Caixa para tempo restante
   fill(branco);
   stroke(azulEscuro);
@@ -112,18 +104,21 @@ void mouseReleasedPipetagem() {
   if (AddColeta.isPressed) {
     AddColeta.isPressed = false;
     
-    setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
+    //setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
     
     // Mudança de telas
-    telaPipetagem = false;
-    telaPontosColeta = true;
+    //telaPipetagem = false;
+    //telaPontosColeta = true;
   }
   
   else if(AddDispensa.isPressed){
     AddDispensa.isPressed = false;
     
-    println("Ponto de dispensa clicado");
-    //pontosDispensa++;
+    
+    // Mudança de telas
+    setupTelaPontosDispensa();
+    telaPipetagem = false;
+    telaPontosDispensa = true;
   }
   
   else if(iniciaPip.isPressed) {
@@ -133,7 +128,7 @@ void mouseReleasedPipetagem() {
      pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
      pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
-     println("teste botao inciar");
+
   }
   
   else if(pausaPip.isPressed){
@@ -143,7 +138,7 @@ void mouseReleasedPipetagem() {
      pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
      pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);       
-     println("teste botao pausar");
+
   }
   
   else if (pararPip.isPressed){

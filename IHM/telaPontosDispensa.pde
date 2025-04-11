@@ -1,5 +1,5 @@
 int[] coordenadas = {0, 0, 0};    // X, Y, Z coordinates
-ArrayList<PontoColeta> listaPontos = new ArrayList<PontoColeta>();
+ArrayList<PontoDispensa> listaPontos = new ArrayList<PontoDispensa>();
 
 boolean scrollingUp    = false;
 boolean scrollingDown  = false;
@@ -24,13 +24,13 @@ boolean hasItemsBelow = false;
 // -----------------------------------------------------------------------------
 // Classes for handling points & buttons
 // -----------------------------------------------------------------------------
-class PontoColeta {
+class PontoDispensa {
   String nome;
   int volume;
   int[] coords = {0, 0, 0};
   boolean selected = false;
   
-  PontoColeta(String n, int v, int x, int y, int z) {
+  PontoDispensa(String n, int v, int x, int y, int z) {
     nome      = n;
     volume    = v;
     coords[0] = x;
@@ -77,9 +77,9 @@ void botao_direcional(float x, float y, float raioMaior, float raioMenor) {
 }
 
 // -----------------------------------------------------------------------------
-// The setup function for 'PontosColeta'
+// The setup function for 'PontosDispensa'
 // -----------------------------------------------------------------------------
-void setupTelaPontosColeta() {
+void setupTelaPontosDispensa() {
   // Create UI elements (positions approximate)
   addButton    = new Button(true, width - 327, height - 180, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
   editButton   = new Button(true, width - 227, height - 180, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
@@ -111,9 +111,9 @@ void setupTelaPontosColeta() {
 }
 
 // -----------------------------------------------------------------------------
-// The main draw function for 'PontosColeta'
+// The main draw function for 'PontosDispensa'
 // -----------------------------------------------------------------------------
-void desenhaTelaPontosColeta() {
+void desenhaTelaPontosDispensa() {
   background(branco); 
   
   // 'Voltar' button (top-left). This uses a global function from Globals
@@ -197,6 +197,7 @@ void drawPointsList() {
   hasItemsAbove = scrollOffset > 0;
   hasItemsBelow = endIndex < listaPontos.size();
   
+  // Simbolo "^"
   if (hasItemsAbove) {
     fill(azulEscuro);
     textSize(20);
@@ -204,6 +205,8 @@ void drawPointsList() {
     text("^", width - 170, 130);
     textSize(12);
   }
+  
+  // Simbolo "v"
   if (hasItemsBelow) {
     fill(azulEscuro);
     textSize(15);
@@ -213,30 +216,31 @@ void drawPointsList() {
   }
   
   for (int i = scrollOffset; i < endIndex; i++) {
-    PontoColeta ponto = listaPontos.get(i);
+    PontoDispensa ponto = listaPontos.get(i);
     int y = startY + (i - scrollOffset)*itemHeight;
     
+    // "Efeito" de seleçaõ do ponto
     if (ponto.selected) {
       fill(cinzaClaro);
-      rect(width - 310, y - 15, 250, 30, 5);
+      rect(width - 330, y - 15, 225, 30, 5);
     }
     
     // Checkbox
     fill(branco);
     stroke(azulEscuro);
-    rect(width - 300, y - 10, 20, 20, 3);
+    rect(width - 320, y - 10, 20, 20, 3);
     if (ponto.selected) {
       fill(azulEscuro);
-      rect(width - 295, y - 5, 10, 10, 2);
+      rect(width - 315, y - 5, 10, 10, 2);
     }
     
     // Text label and coordinates
     fill(azulEscuro);
     noStroke();
     textAlign(LEFT, CENTER);
-    text(ponto.toString(), width - 270, y);
+    text(ponto.toString(), width - 290, y);
     text("( " + ponto.coords[0] + ", " + ponto.coords[1] + ", " + ponto.coords[2] + " )", 
-         width - 180, y);
+         width - 200, y);
   }
 }
 
@@ -292,7 +296,7 @@ void mousePressedTelaMovimentacaoManual() {
   int endIndex = min(listaPontos.size(), scrollOffset + maxVisiblePoints);
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
-    if (mouseX >= width - 300 && mouseX <= width - 280 &&
+    if (mouseX >= width - 320 && mouseX <= width - 300 &&
         mouseY >= y - 10 && mouseY <= y + 10) {
       listaPontos.get(i).selected = !listaPontos.get(i).selected;
       return;
@@ -302,7 +306,7 @@ void mousePressedTelaMovimentacaoManual() {
   // 7) Action buttons: add, edit, delete
   if (addButton.isMouseOver()) {
     addButton.isPressed = true;
-    pontosColeta++;
+    pontosDispensa++;
     return;
   }
   if (editButton.isMouseOver()) {
@@ -355,15 +359,19 @@ void mouseReleasedTelaMovimentacaoManual() {
       switch (i) {
         case 0: // Up
           coordenadas[1] -= movSpeed;
+          coordenadas[1] = constrain(coordenadas[1], minY, maxY); // Set the limits for the Y axis
           break;
         case 1: // Right
           coordenadas[0] -= movSpeed;
+          coordenadas[0] = constrain(coordenadas[0], minX, maxX); // Set the limits for the X axis
           break;
         case 2: // Down
           coordenadas[1] += movSpeed;
+          coordenadas[1] = constrain(coordenadas[1], minY, maxY);
           break;
         case 3: // Left
           coordenadas[0] += movSpeed;
+          coordenadas[0] = constrain(coordenadas[0], minX, maxX);
           break;
       }
     }
@@ -420,7 +428,7 @@ void mouseReleasedTelaMovimentacaoManual() {
   if (backButton.isPressed){
     backButton.isPressed = false;
     
-    telaPontosColeta = false;
+    telaPontosDispensa = false;
     telaPipetagem = true;
   }
   
@@ -429,18 +437,21 @@ void mouseReleasedTelaMovimentacaoManual() {
     z_plus.isPressed = false;
     if (!zLocked){
       coordenadas[2] += movSpeed;
+      coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); // Set the limits for the Z axis
     }
   }
   if (z_minus.isPressed) {
    z_minus.isPressed = false;
    if (!zLocked){
      coordenadas[2] -= movSpeed;
+     coordenadas[2] = constrain(coordenadas[2], minZ, maxZ);
      }
   }
   if (z_home.isPressed){
    z_home.isPressed = false; 
    if (!zLocked){
      coordenadas[2] = 0;
+     //coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); (Colocar somente se a coordenada Z = 0 estiver fora do 'constrain')
     }
   }
   
@@ -461,7 +472,7 @@ void mouseReleasedTelaMovimentacaoManual() {
 void addNewPoint() {
   int nextPointNum = listaPontos.size() + 1;
   String pointName = "Ponto " + (nextPointNum < 10 ? "0" + nextPointNum : nextPointNum);
-  PontoColeta pc = new PontoColeta(pointName, 3, coordenadas[0], coordenadas[1], coordenadas[2]);
+  PontoDispensa pc = new PontoDispensa(pointName, 3, coordenadas[0], coordenadas[1], coordenadas[2]);
   listaPontos.add(pc);
 }
 
@@ -469,7 +480,7 @@ void deleteSelectedPoints() {
   for (int i = listaPontos.size() - 1; i >= 0; i--) {
     if (listaPontos.get(i).selected) {
       listaPontos.remove(i);
-      pontosColeta--;
+      pontosDispensa--;
     }
   }
   
@@ -488,13 +499,13 @@ void deleteSelectedPoints() {
 
 void editSelectedPoints() {
   ArrayList<String> selectedPoints = new ArrayList<String>();
-  for (PontoColeta p : listaPontos) {
+  for (PontoDispensa p : listaPontos) {
     if (p.selected) {
       selectedPoints.add(p.toString());
     }
   }
   println("Editing points: " + selectedPoints);
   // Trocar para a tela de editar pontos 
-  // telaPontosColeta = false;
+  // telaPontosDispensa = false;
   // telaEditarPontos = true;
 }

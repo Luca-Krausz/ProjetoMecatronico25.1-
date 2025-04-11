@@ -30,7 +30,8 @@ boolean telaInicio         = true;
 boolean telaReferenciar    = false;
 boolean telaPipetagem      = false;
 boolean telaPontosColeta   = false;
-boolean telaReferenciarI2C      = false;
+boolean telaPontosDispensa = false;
+boolean telaReferenciarI2C = false;
 boolean pressedPontoColeta = false;
 boolean pressedPontoDispensa = false;
 boolean pressedIniciarPipetagem = false;
@@ -46,6 +47,13 @@ boolean pipetagemAtiva   = false;
 boolean pipetagemPausada = false;
 boolean inicio_config = false;
 int movSpeed       = 1;  // 1mm, 10mm, 30mm
+
+int maxX = 665;
+int minX = 0;
+int maxY = 560;
+int minY = 0;
+int maxZ = 100;
+int minZ = 0;
 
 // Shapes for the directional pad
 PShape dirPad;
@@ -133,8 +141,8 @@ void draw() {
       }
     }
   }
-  else if (telaPontosColeta) {
-    desenhaTelaPontosColeta();
+  else if (telaPontosDispensa) {
+    desenhaTelaPontosDispensa();
   }
   else {
     // fallback
@@ -157,7 +165,7 @@ void mousePressed() {
   else if (telaPipetagem) {
     mousePressedPipetagem();
   }
-  else if (telaPontosColeta) {
+  else if (telaPontosDispensa) {
     mousePressedTelaMovimentacaoManual();
   }
 }
@@ -166,7 +174,7 @@ void mousePressed() {
 // Complement the press & release approach:
 void mouseReleased() {
   // Colocar a tela para conseguir 
-  if (telaPontosColeta) {
+  if (telaPontosDispensa) {
     mouseReleasedTelaMovimentacaoManual();
   }
   else if (telaPipetagem) {
