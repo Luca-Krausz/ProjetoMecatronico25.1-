@@ -131,8 +131,8 @@ void mouseReleasedPipetagem() {
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
      
      gerarListaFormatoFinal();
-     porta.write(gerarStringFormatoFinal());
-     //println("Função iniciarPipetagem() executada.");
+     println(gerarStringFormatoFinal());
+     println("Função iniciarPipetagem() executada.");
   }
   
   else if(pausaPip.isPressed){
@@ -155,7 +155,7 @@ void mouseReleasedPipetagem() {
     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);     
-    //println("Parar pipetadora");
+    println("Parar pipetadora");
   }
   
 }

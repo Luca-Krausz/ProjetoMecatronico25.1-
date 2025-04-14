@@ -607,12 +607,12 @@ String gerarStringFormatoFinal() {
 
   // Handle the case where the list is empty
   if (dataList.isEmpty()) {
-    return "PIP []"; // Return empty brackets string
+    return "[]"; // Return empty brackets string
   }
 
   // Use StringBuilder for efficient string building
   StringBuilder sb = new StringBuilder();
-  sb.append("PIP ["); // Start with the opening bracket
+  sb.append("["); // Start with the opening bracket
 
   // Loop through the list of int arrays
   for (int i = 0; i < dataList.size(); i++) {

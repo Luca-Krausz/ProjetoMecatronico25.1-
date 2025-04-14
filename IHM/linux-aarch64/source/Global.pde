@@ -1,5 +1,5 @@
 // Globals.pde
-import processing.serial.*;
+
 
 // ------------------ GLOBAL VARIABLES ------------------
 
@@ -71,9 +71,6 @@ PShape iconeXY;
 // Botão voltar 
 Button backButton;
 
-// Porta UART com Raspberry
-Serial porta;
-
 // ------------------ SETTINGS & SETUP ------------------
 void settings() {
   size(janelaLargura, janelaAltura, P2D);
@@ -114,9 +111,6 @@ void setup() {
     
   // Any array initializations
   inicializaListaPontosManual();
-
-  // UART Comms
-  porta = new Serial(this, "/dev/ttyAMA0", 9600);
 
   noStroke();
 }

@@ -44,7 +44,6 @@ void mouseReleasedRefI2C() {
    botao_continuar_ref.isPressed = false;
        
    setupTelaPipetagem();
-   porta.write("REF\r");
    telaReferenciarI2C   = false;
    telaPipetagem = true;
   }
