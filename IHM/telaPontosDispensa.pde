@@ -148,10 +148,10 @@ void desenhaTelaPontosDispensa() {
   fill(branco);
   textSize(20);
   textAlign(CENTER, CENTER);
-  text("+X", 362, 300); // Original label position
-  text("-X", 135, 300); // Original label position
-  text("+Y", 247, 186); // Original label position
-  text("-Y", 247, 414); // Original label position
+  text("+Y", 362, 300); // Original label position
+  text("-Y", 135, 300); // Original label position
+  text("-X", 247, 186); // Original label position
+  text("+X", 247, 414); // Original label position
 
   // 4) Draw the button home for axis x & y
   /* Original commented code - kept as is
@@ -389,20 +389,28 @@ void mouseReleasedTelaMovimentacaoManual() {
         if (segments[i].contains(mouseX, mouseY) && !xyLocked) { 
           switch (i) {
             case 0: // Up
-              coordenadas[1] -= movSpeed;
-              coordenadas[1] = constrain(coordenadas[1], minY, maxY); // Set the limits for the Y axis
+              command = "+X" + String.valueOf(movSpeed + "\r");
+              coordenadas[0] += movSpeed;
+              coordenadas[0] = constrain(coordenadas[0], minX, maxX); 
+              porta.write(command);
               break;
-            case 1: // Right (Original logic: -X)
-              coordenadas[0] -= movSpeed;
-              coordenadas[0] = constrain(coordenadas[0], minX, maxX); // Set the limits for the X axis
+            case 1: // Right 
+              command = "+Y" + String.valueOf(movSpeed) + "\r";
+              coordenadas[1] -= movSpeed;
+              coordenadas[1] = constrain(coordenadas[1], minY, maxY); 
+              porta.write(command);
               break;
             case 2: // Down
+              command = "-X" + String.valueOf(movSpeed) + "\r";
+              coordenadas[0] -= movSpeed;
+              coordenadas[0] = constrain(coordenadas[0], minX, maxX);
+              porta.write(command);
+              break;
+            case 3: // Left
+              command = "-Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] += movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY);
-              break;
-            case 3: // Left (Original logic: +X)
-              coordenadas[0] += movSpeed;
-              coordenadas[0] = constrain(coordenadas[0], minX, maxX);
+              porta.write(command);
               break;
           }
         }
@@ -483,16 +491,20 @@ void mouseReleasedTelaMovimentacaoManual() {
   // 6) Button for Z axis
   if (z_plus.isPressed){
     z_plus.isPressed = false; // Reset state first
-    // Original logic doesn't check isMouseOver on release
+
     if (!zLocked){
+      command = "+Z" + String.valueOf(movSpeed) + "\r";
+      porta.write(command);
       coordenadas[2] += movSpeed;
       coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); // Set the limits for the Z axis
     }
   }
   if (z_minus.isPressed) {
    z_minus.isPressed = false; // Reset state first
-   // Original logic doesn't check isMouseOver on release
+
    if (!zLocked){
+     command = "-Z" + String.valueOf(movSpeed) + "\r";
+     porta.write(command);
      coordenadas[2] -= movSpeed;
      coordenadas[2] = constrain(coordenadas[2], minZ, maxZ);
      }
@@ -501,6 +513,8 @@ void mouseReleasedTelaMovimentacaoManual() {
    z_home.isPressed = false; // Reset state first
    // Original logic doesn't check isMouseOver on release
    if (!zLocked){
+     command = "ZH\r";
+     porta.write(command);
      coordenadas[2] = 0;
      //coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); (Original comment)
    }
@@ -511,8 +525,10 @@ void mouseReleasedTelaMovimentacaoManual() {
    xy_home.isPressed = false; // Reset state first
    // Original logic doesn't check isMouseOver on release
    if (!xyLocked){
-    coordenadas[0] = 0;
-    coordenadas[1] = 0;
+     command = "XYH\r";
+     porta.write(command);
+     coordenadas[0] = 0;
+     coordenadas[1] = 0;
    }
   }
 

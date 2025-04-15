@@ -130,9 +130,13 @@ void mouseReleasedPipetagem() {
      pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
      
-     gerarListaFormatoFinal();
-     porta.write(gerarStringFormatoFinal());
-     //println("Função iniciarPipetagem() executada.");
+     if (porta != null){
+       gerarListaFormatoFinal();
+       porta.write(gerarStringFormatoFinal());
+     }
+     else {
+       println("porta inválida"); 
+     }
   }
   
   else if(pausaPip.isPressed){

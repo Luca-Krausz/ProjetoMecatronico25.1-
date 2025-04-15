@@ -48,6 +48,7 @@ boolean pipetagemAtiva   = false;
 boolean pipetagemPausada = false;
 boolean inicio_config = false;
 int movSpeed       = 1;  // 1mm, 10mm, 30mm
+String command = "";
 
 int maxX = 665;
 int minX = 0;
@@ -73,6 +74,7 @@ Button backButton;
 
 // Porta UART com Raspberry
 Serial porta;
+
 
 // ------------------ SETTINGS & SETUP ------------------
 void settings() {

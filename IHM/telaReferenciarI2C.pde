@@ -42,9 +42,15 @@ void mousePressedRefI2C() {
 void mouseReleasedRefI2C() {
   if (botao_continuar_ref.isPressed) {
    botao_continuar_ref.isPressed = false;
-       
+   
+   if (porta != null){
+     porta.write("REF\r");
+   }
+   else {
+     println("porta inválida");
+   }
+   
    setupTelaPipetagem();
-   porta.write("REF\r");
    telaReferenciarI2C   = false;
    telaPipetagem = true;
   }
