@@ -1,57 +1,7 @@
 // Original global variables
-int[] coordenadas = {0, 0, 0};    // X, Y, Z coordinates
-ArrayList<PontoDispensa> listaPontos = new ArrayList<PontoDispensa>();
-
-boolean scrollingUp    = false;
-boolean scrollingDown  = false;
-int scrollOffset       = 0;
-int maxVisiblePoints   = 5;
-int selectedPoint      = -1;
-
-// Global lock states
-boolean xyLocked = false;
-boolean zLocked  = false;
 
 // UI elements
-Button addButton, deleteButton, editButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
-SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
-String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
-
-// Scroll arrow buttons
-Button scrollUpButton, scrollDownButton;
-boolean hasItemsAbove = false;
-boolean hasItemsBelow = false;
-
-
-// -----------------------------------------------------------------------------
-// Classes for handling points & buttons
-// -----------------------------------------------------------------------------
-class PontoDispensa {
-  String nome;
-  int volume;
-  int[] coords = {0, 0, 0};
-  int[] coordsColeta = {0, 0, 0}; // Collection coords: x_coleta, y_coleta, z_coleta
-  boolean selected = false;
-
-  // Added xc, yc, zc parameters for collection coordinates
-  PontoDispensa(String n, int v, int x, int y, int z, int xc, int yc, int zc) {
-    nome       = n;
-    volume     = v;
-    coords[0]  = x;
-    coords[1]  = y;
-    coords[2]  = z;
-
-    coordsColeta[0] = xc;
-    coordsColeta[1] = yc;
-    coordsColeta[2] = zc;
-  }
-
-  // Original toString method
-  String toString() {
-    // e.g. 'Ponto 01 - 3ml' plus coordinates
-    return nome + " - " + volume + "ml";
-  }
-}
+Button addButtonDispensa, deleteButtonDispensa, editButtonDispensa, scrollUpButtonDispensa, scrollDownButtonDispensa;
 
 // -----------------------------------------------------------------------------
 // Build the directional pad (dirPad + segments are from Globals.pde).
@@ -92,34 +42,13 @@ void botao_direcional(float x, float y, float raioMaior, float raioMenor) {
 // Original function - No changes
 void setupTelaPontosDispensa() {
   // Create UI elements (positions approximate)
-  addButton    = new Button(true, width - 327, height - 180, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
-  editButton   = new Button(true, width - 227, height - 180, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
-  deleteButton = new Button(true, width -  127, height - 180, 80, 80, trash,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  addButtonDispensa    = new Button(true, width - 327, height - 180, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  editButtonDispensa   = new Button(true, width - 227, height - 180, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  deleteButtonDispensa = new Button(true, width -  127, height - 180, 80, 80, trash,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
 
-  // Lock buttons
-  lockXYButton = new Button(true, 120, height - 120, 120, 40, "Lock XY", cinzaMedio, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  lockZButton  = new Button(true, 260, height - 120, 120, 40, "Lock Z",  cinzaMedio, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-
-  scrollUpButton   = new Button(true, width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  scrollDownButton = new Button(true, width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-
-  // Initialize precision selector using the global precisionLabels array
-  color[] precisionColors = {verdeBotao, verdeBotao, verdeBotao};
-  precisionSelector = new SegmentedButton(100, 30, 300, 40, precisionLabels, precisionColors, azulEscuro);
-  precisionSelector.selectedIndex = 0;
-
-  // Draw the direction pad (Buttons for XY axis)
-  botao_direcional(250, 300, 150, 80);
-
-  // Draw the Buttons for the Z axis
-  z_plus = new Button(true, 500, height - 490, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  z_minus = new Button(true, 500, height - 192, 95, 95, "Z-", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  z_home = new Button(true, 500, height - 341, 95, 95, homeZ, azulEscuro); //(square?, x, y, w, h, icon, bgColor)
-
-  // Draw the Button for the home XY
-  xy_home = new Button(false, 250, 300, 100, 100, homeXY, azulEscuro);
-  
-  // Declare the PIP UART function
+  // Scroll Buttons
+  scrollUpButtonDispensa   = new Button(true, width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollDownButtonDispensa = new Button(true, width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
 
 }
@@ -127,10 +56,9 @@ void setupTelaPontosDispensa() {
 // -----------------------------------------------------------------------------
 // The main draw function for 'PontosDispensa'
 // -----------------------------------------------------------------------------
-// Original function - No changes
+
 void desenhaTelaPontosDispensa() {
   background(branco);
-
 
   // 1) Draw the precision selector
   precisionSelector.draw();
@@ -154,11 +82,6 @@ void desenhaTelaPontosDispensa() {
   text("+X", 247, 414); // Original label position
 
   // 4) Draw the button home for axis x & y
-  /* Original commented code - kept as is
-  fill(azulEscuro);
-  ellipse(250, 300, 100, 100);
-  fill(branco);
-  image(homeXY, 132, 235);*/
   xy_home.draw();
 
   // 5) Side panel for 'Pontos adicionados'
@@ -168,19 +91,19 @@ void desenhaTelaPontosDispensa() {
   fill(azulEscuro);
   textSize(18);
   textAlign(LEFT, CENTER);
-  text("Pontos de Dispensa", width - 310, 100);
+  text("Pontos para Dispensa", width - 310, 100);
 
   // 6) List of points
-  drawPointsList();
+  drawPointsList(listaPontosDispensa, scrollOffset, false);
 
   // Always show the scroll buttons
-  scrollUpButton.draw();
-  scrollDownButton.draw();
+  scrollUpButtonDispensa.draw();
+  scrollDownButtonDispensa.draw();
 
   // 7) Action buttons: add, edit, delete
-  addButton.draw();
-  editButton.draw();
-  deleteButton.draw();
+  addButtonDispensa.draw();
+  editButtonDispensa.draw();
+  deleteButtonDispensa.draw();
 
   // 8) Draw Lock XY / Lock Z buttons
   lockXYButton.draw();
@@ -193,73 +116,12 @@ void desenhaTelaPontosDispensa() {
   z_plus.draw();
   z_minus.draw();
   z_home.draw();
+  
+  // 11) Draw the side panel 
+    drawPointsList(listaPontosDispensa, scrollOffset, false);
 
 }
 
-// -----------------------------------------------------------------------------
-// Draw the list of points in side panel
-// -----------------------------------------------------------------------------
-
-void drawPointsList() {
-  int startY     = 150;
-  int itemHeight = 40;
-
-  fill(azulEscuro);
-  textSize(12);
-  textAlign(LEFT, CENTER);
-
-  int endIndex = min(listaPontos.size(), scrollOffset + maxVisiblePoints);
-
-  hasItemsAbove = scrollOffset > 0;
-  hasItemsBelow = endIndex < listaPontos.size();
-
-  // Simbolo "^"
-  if (hasItemsAbove) {
-    fill(azulEscuro);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("^", width - 170, 130);
-    textSize(12);
-  }
-
-  // Simbolo "v"
-  if (hasItemsBelow) {
-    fill(azulEscuro);
-    textSize(15);
-    textAlign(CENTER, CENTER);
-    text("v", width - 170, startY + maxVisiblePoints * itemHeight);
-    textSize(12);
-  }
-
-  for (int i = scrollOffset; i < endIndex; i++) {
-    PontoDispensa ponto = listaPontos.get(i);
-    int y = startY + (i - scrollOffset)*itemHeight;
-
-    // "Efeito" de seleçaõ do ponto
-    if (ponto.selected) {
-      fill(cinzaClaro);
-      rect(width - 330, y - 15, 225, 30, 5); // Original selection highlight size
-    }
-
-    // Checkbox
-    fill(branco);
-    stroke(azulEscuro);
-    rect(width - 320, y - 10, 20, 20, 3);
-    if (ponto.selected) {
-      fill(azulEscuro);
-      rect(width - 315, y - 5, 10, 10, 2);
-    }
-
-    // Text label and coordinates
-    fill(azulEscuro);
-    noStroke();
-    textAlign(LEFT, CENTER);
-    text(ponto.toString(), width - 290, y); // Displays name and volume
-    text("( " + ponto.coords[0] + ", " + ponto.coords[1] + ", " + ponto.coords[2] + " )",
-         width - 200, y); // Displays dispense coordinates
-    // NOTE: Collection coordinates (ponto.coordsColeta) are NOT displayed here in the original code
-  }
-}
 
 // -----------------------------------------------------------------------------
 //                                MOUSE PRESSED
@@ -284,16 +146,12 @@ void mousePressedTelaMovimentacaoManual() {
   }
 
   // 3) Center circle (original logic based on distance)
-  // Note: Original code didn't explicitly link center circle click to xy_home button state
   if (dist(mouseX, mouseY, 250, 300) < 50) { // Using radius from botao_direcional inner circle (80/2=40, slightly larger area 50)
-     // Original code might have intended this click for the home button.
-     // If xy_home is the center button, handle its press state:
      if (xy_home.isMouseOver()) { // Check if over the actual button bounds
          xy_home.isPressed = true;
      }
      return; // Return as in original logic if center area clicked
   }
-
 
   // 4) Lock buttons: if a lock button is touched, mark it as pressed.
   if (lockXYButton.isMouseOver()) {
@@ -306,41 +164,41 @@ void mousePressedTelaMovimentacaoManual() {
   }
 
   // 5) Scroll buttons
-  if (scrollUpButton.isMouseOver()) {
-    scrollUpButton.isPressed = true;
+  if (scrollUpButtonDispensa.isMouseOver()) {
+    scrollUpButtonDispensa.isPressed = true;
     return;
   }
-  if (scrollDownButton.isMouseOver()) {
-    scrollDownButton.isPressed = true;
+  if (scrollDownButtonDispensa.isMouseOver()) {
+    scrollDownButtonDispensa.isPressed = true;
     return;
   }
 
   // 6) Points list checkboxes
   int startY   = 150;
   int itemH    = 40;
-  int endIndex = min(listaPontos.size(), scrollOffset + maxVisiblePoints);
+  int endIndex = min(listaPontosDispensa.size(), scrollOffset + maxVisiblePoints);
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
     // Original checkbox click area
     if (mouseX >= width - 320 && mouseX <= width - 300 &&
         mouseY >= y - 10 && mouseY <= y + 10) {
-      listaPontos.get(i).selected = !listaPontos.get(i).selected;
+      listaPontosDispensa.get(i).selected = !listaPontosDispensa.get(i).selected;
       return;
     }
   }
 
   // 7) Action buttons: add, edit, delete
-  if (addButton.isMouseOver()) {
-    addButton.isPressed = true;
+  if (addButtonDispensa.isMouseOver()) {
+    addButtonDispensa.isPressed = true;
     pontosDispensa++; // Original logic increments here
     return;
   }
-  if (editButton.isMouseOver()) {
-    editButton.isPressed = true;
+  if (editButtonDispensa.isMouseOver()) {
+    editButtonDispensa.isPressed = true;
     return;
   }
-  if (deleteButton.isMouseOver()) {
-    deleteButton.isPressed = true;
+  if (deleteButtonDispensa.isMouseOver()) {
+    deleteButtonDispensa.isPressed = true;
     return;
   }
 
@@ -359,8 +217,6 @@ void mousePressedTelaMovimentacaoManual() {
   }
 
   // 9) Button home for X & Y axis
-  // This might have been intended to be handled by step 3 (center circle)
-  // Adding explicit check for the button object itself for clarity
   if (xy_home.isMouseOver()){
    xy_home.isPressed = true;
    return;
@@ -392,25 +248,45 @@ void mouseReleasedTelaMovimentacaoManual() {
               command = "+X" + String.valueOf(movSpeed + "\r");
               coordenadas[0] += movSpeed;
               coordenadas[0] = constrain(coordenadas[0], minX, maxX); 
-              porta.write(command);
+              if (porta != null) {
+                porta.write(command);
+              }
+              else {
+                println("porta inválida"); 
+              }
               break;
             case 1: // Right 
               command = "+Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] -= movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY); 
-              porta.write(command);
+              if (porta != null) {
+                porta.write(command);
+              }
+              else {
+                println("porta inválida"); 
+              }
               break;
             case 2: // Down
               command = "-X" + String.valueOf(movSpeed) + "\r";
               coordenadas[0] -= movSpeed;
               coordenadas[0] = constrain(coordenadas[0], minX, maxX);
-              porta.write(command);
+              if (porta != null) {
+                porta.write(command);
+              }
+              else {
+                println("porta inválida"); 
+              }
               break;
             case 3: // Left
               command = "-Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] += movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY);
-              porta.write(command);
+              if (porta != null) {
+                porta.write(command);
+              }
+              else {
+                println("porta inválida"); 
+              }
               break;
           }
         }
@@ -434,55 +310,41 @@ void mouseReleasedTelaMovimentacaoManual() {
   }
 
   // 3) Scroll up/down
-  if (scrollUpButton.isPressed) {
-    if (scrollUpButton.isMouseOver() && scrollOffset > 0) { // Original condition
+  if (scrollUpButtonDispensa.isPressed) {
+    if (scrollUpButtonDispensa.isMouseOver() && scrollOffset > 0) { // Original condition
       scrollOffset--;
     }
-    scrollUpButton.isPressed = false;
+    scrollUpButtonDispensa.isPressed = false;
   }
-  if (scrollDownButton.isPressed) {
-    if (scrollDownButton.isMouseOver() &&
-        scrollOffset < listaPontos.size() - maxVisiblePoints) { // Original condition
+  if (scrollDownButtonDispensa.isPressed) {
+    if (scrollDownButtonDispensa.isMouseOver() &&
+        scrollOffset < listaPontosDispensa.size() - maxVisiblePoints) { // Original condition
       scrollOffset++;
     }
-    scrollDownButton.isPressed = false;
+    scrollDownButtonDispensa.isPressed = false;
   }
 
   // 4) Action buttons: add, edit, delete
-  if (addButton.isPressed) {
-    if (addButton.isMouseOver()) { // Original condition
-      addNewPoint();
-      // Original code didn't adjust scroll offset after adding
-    }
-    addButton.isPressed = false;
-    // Note: Original mousePressed incremented pontosDispensa immediately.
-    // If addNewPoint fails or isn't called, this count could be wrong.
-    // Keeping original logic for now. Consider updating pontosDispensa in addNewPoint.
+  if (addButtonDispensa.isPressed) {
+    addButtonDispensa.isPressed = false;
+      
+    addNewPoint(listaPontosDispensa, "Dispensa", false, coordenadas, coordenadasColeta); 
   }
-  if (editButton.isPressed) {
-    if (editButton.isMouseOver()) { // Original condition
-      editSelectedPoints();
-    }
-    editButton.isPressed = false;
+  if (editButtonDispensa.isPressed) {
+    editButtonDispensa.isPressed = false;
+    
+    editSelectedPoints(listaPontosDispensa, false, coordenadas, coordenadasColeta); 
   }
-  if (deleteButton.isPressed) {
-    if (deleteButton.isMouseOver()) { // Original condition
-      deleteSelectedPoints();
-      // Original code didn't adjust scroll offset after deleting here
-      // but deleteSelectedPoints itself had some scroll logic
-    }
-    deleteButton.isPressed = false;
-     // Note: Original mousePressed didn't handle pontosDispensa decrement here.
-     // deleteSelectedPoints handles it.
+  if (deleteButtonDispensa.isPressed) {
+    deleteButtonDispensa.isPressed = false;
+    
+    deleteSelectedPoints(listaPontosDispensa, scrollOffset, "Dispensa");   
   }
 
   // 5) Back Button
-  if (backButton != null && backButton.isPressed){ // Added null check
-    backButton.isPressed = false; // Reset state first
+  if (backButton != null && backButton.isPressed){ 
+    backButton.isPressed = false; 
 
-    // Original logic checks isMouseOver implicitly by not checking it
-    // To match original exactly, assume release anywhere triggers if pressed:
-    // if (backButton.isMouseOver()) { // This check was NOT in original logic implicitly
        telaPontosDispensa = false;
        telaPipetagem = true;
     // }
@@ -494,7 +356,12 @@ void mouseReleasedTelaMovimentacaoManual() {
 
     if (!zLocked){
       command = "+Z" + String.valueOf(movSpeed) + "\r";
-      porta.write(command);
+      if (porta != null) {
+        porta.write(command);
+     }
+     else {
+        println("porta inválida"); 
+     }
       coordenadas[2] += movSpeed;
       coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); // Set the limits for the Z axis
     }
@@ -504,7 +371,12 @@ void mouseReleasedTelaMovimentacaoManual() {
 
    if (!zLocked){
      command = "-Z" + String.valueOf(movSpeed) + "\r";
-     porta.write(command);
+     if (porta != null) {
+        porta.write(command);
+     }
+     else {
+        println("porta inválida"); 
+     }
      coordenadas[2] -= movSpeed;
      coordenadas[2] = constrain(coordenadas[2], minZ, maxZ);
      }
@@ -514,7 +386,12 @@ void mouseReleasedTelaMovimentacaoManual() {
    // Original logic doesn't check isMouseOver on release
    if (!zLocked){
      command = "ZH\r";
-     porta.write(command);
+     if (porta != null) {
+        porta.write(command);
+     }
+     else {
+        println("porta inválida"); 
+     }
      coordenadas[2] = 0;
      //coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); (Original comment)
    }
@@ -526,7 +403,12 @@ void mouseReleasedTelaMovimentacaoManual() {
    // Original logic doesn't check isMouseOver on release
    if (!xyLocked){
      command = "XYH\r";
-     porta.write(command);
+     if (porta != null) {
+        porta.write(command);
+     }
+     else {
+        println("porta inválida"); 
+     }
      coordenadas[0] = 0;
      coordenadas[1] = 0;
    }
@@ -538,57 +420,10 @@ void mouseReleasedTelaMovimentacaoManual() {
 // -----------------------------------------------------------------------------
 // Adding, deleting, and editing points
 // -----------------------------------------------------------------------------
-void addNewPoint() {
-  int nextPointNum = listaPontos.size() + 1;
-  // Original naming convention
-  String pointName = "Ponto " + (nextPointNum < 10 ? "0" + nextPointNum : nextPointNum);
 
-  // Using 0, 0, 0 as placeholders for the new collection coordinates.
-  PontoDispensa pc = new PontoDispensa(pointName, 3, // Default volume 3ml
-                                       coordenadas[0], coordenadas[1], coordenadas[2],
-                                       0, 0, 0); // Placeholder xc, yc, zc
-
-  listaPontos.add(pc);
-  // Note: Consider moving pontosDispensa++ from mousePressed here for accuracy
-}
-
-// Original function - No changes
-void deleteSelectedPoints() {
-  for (int i = listaPontos.size() - 1; i >= 0; i--) {
-    if (listaPontos.get(i).selected) {
-      listaPontos.remove(i);
-      pontosDispensa--; // Original logic decrements here
-    }
-  }
-
-  // Original re-numbering logic
-  for (int i = 0; i < listaPontos.size(); i++) {
-    String pointName = "Ponto " + ((i+1 < 10) ? ("0" + (i+1)) : (i+1));
-    listaPontos.get(i).nome = pointName;
-  }
-
-  // Original scroll adjustment logic
-  if (scrollOffset > 0 && listaPontos.size() <= maxVisiblePoints) {
-    scrollOffset = 0;
-  }
-  else if (scrollOffset > 0 && scrollOffset >= listaPontos.size() - maxVisiblePoints) {
-    scrollOffset = max(0, listaPontos.size() - maxVisiblePoints);
-  }
-}
-
-// Original function - No changes
-void editSelectedPoints() {
-  ArrayList<String> selectedPoints = new ArrayList<String>();
-  for (PontoDispensa p : listaPontos) {
-    if (p.selected) {
-      selectedPoints.add(p.toString()); // Original logic adds string representation
-    }
-  }
-  println("Editing points: " + selectedPoints); // Original output
-  // Trocar para a tela de editar pontos (Original comment)
-  // telaPontosDispensa = false;
-  // telaEditarPontos = true;
-}
+    // addNewPoint(listaPontosDispensa, "Dispensa", false, coordenadas, coordenadasColeta);      ArrayList<Ponto> list, String baseName, boolean isColetaScreen, int[] currentCoords, int[] associatedCoordsColeta
+    // deleteSelectedPoints(listaPontosDispensa, scrollOffset, "Dispensa");                      ArrayList<Ponto> list, int scrollOffset, String baseName
+    // editSelectedPoints(listaPontosDispensa, false, coordenadas, coordenadasColeta);            ArrayList<Ponto> list, boolean isColetaScreen, int[] currentCoords, int[] associatedCoordsColeta
 
 
 // -----------------------------------------------------------------------------
@@ -598,7 +433,7 @@ ArrayList<int[]> gerarListaFormatoFinal() {
   
   ArrayList<int[]> listaFinal = new ArrayList<int[]>();
 
-  for (PontoDispensa ponto : listaPontos) {
+  for (Ponto ponto : listaPontosDispensa) {
     int[] item = new int[7]; // Create an array to hold the 7 values
 
     item[0] = ponto.coords[0];       // x1 (dispense)

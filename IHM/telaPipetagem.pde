@@ -105,16 +105,14 @@ void mouseReleasedPipetagem() {
   if (AddColeta.isPressed) {
     AddColeta.isPressed = false;
     
-    //setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
-    
     // Mudança de telas
-    //telaPipetagem = false;
-    //telaPontosColeta = true;
+    setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
+    telaPipetagem = false;
+    telaPontosColeta = true;
   }
   
   else if(AddDispensa.isPressed){
     AddDispensa.isPressed = false;
-    
     
     // Mudança de telas
     setupTelaPontosDispensa();
@@ -140,12 +138,12 @@ void mouseReleasedPipetagem() {
   }
   
   else if(pausaPip.isPressed){
-      pipetagemAtiva = false;
-      pipetagemPausada = true;
-     
-     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
-     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
-     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);       
+    pipetagemAtiva = false;
+    pipetagemPausada = true;
+   
+   pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
+   pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+   iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);       
 
   }
   

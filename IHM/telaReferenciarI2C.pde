@@ -29,12 +29,16 @@ void desenhaRefI2C() {
 
   // Botão "Continuar com referenciamento"
   botao_continuar_ref.draw();
+  backButton.draw();
 
 }
 
 void mousePressedRefI2C() {
   if (botao_continuar_ref.isMouseOver()) {
-    botao_continuar_ref.isPressed = true;
+   botao_continuar_ref.isPressed = true;
+  }
+  if (backButton.isMouseOver()){
+   backButton.isPressed = true; 
   }
   
 }
@@ -53,6 +57,13 @@ void mouseReleasedRefI2C() {
    setupTelaPipetagem();
    telaReferenciarI2C   = false;
    telaPipetagem = true;
+  }
+  
+  if(backButton.isPressed){
+    backButton.isPressed = false;
+    
+   telaReferenciarI2C = false;
+   telaInicio = true;
   }
  
 }
