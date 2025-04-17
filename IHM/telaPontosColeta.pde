@@ -13,8 +13,8 @@ void setupTelaPontosColeta() {
   editButtonColeta   = new Button(true, width - 227, height - 180, 80, 80, editpen,    azulEscuro); // (square?, x, y, w, h, icon, bgColor)
   deleteButtonColeta = new Button(true, width - 127, height - 180, 80, 80, trash,      azulEscuro); // (square?, x, y, w, h, icon, bgColor)
 
-  scrollUpButtonColeta   = new Button(true, width - 60, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // Adjusted X position slightly
-  scrollDownButtonColeta = new Button(true, width - 60, height/2 + 10,  40, 40, "↓", azulEscuro, branco); // Adjusted X position slightly
+  scrollUpButtonColeta   = new Button(true, width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // Adjusted X position slightly
+  scrollDownButtonColeta = new Button(true, width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco); // Adjusted X position slightly
 
 }
 

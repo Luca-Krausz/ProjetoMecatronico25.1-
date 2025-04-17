@@ -1,4 +1,4 @@
-// UI elements
+   // UI elements
 Button  botao_tutorial, modo_manual, modo_automatico, modo_hist;
 
  // Definindo as características dos botões de "modo"
