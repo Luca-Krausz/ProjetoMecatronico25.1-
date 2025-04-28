@@ -155,6 +155,20 @@ void mousePressedTelaPontosColeta() {
     scrollDownButtonColeta.isPressed = true;
     return;
   }
+  
+  // 6) Points list checkboxes
+  int startY   = 150;
+  int itemH    = 35;
+  int endIndex = min(listaPontosColeta.size(), scrollOffset + maxVisiblePoints);
+  for (int i = scrollOffset; i < endIndex; i++) {
+    int y = startY + (i - scrollOffset)*itemH;
+    // Original checkbox click area
+    if (mouseX >= width - 320 && mouseX <= width - 300 &&
+        mouseY >= y - 10 && mouseY <= y + 10) {
+      listaPontosColeta.get(i).selected = !listaPontosColeta.get(i).selected;
+      return;
+    }
+  }
 
   // 9) Action Buttons (Coleta: Add, Edit, Delete)
   if (addButtonColeta.isMouseOver()) {

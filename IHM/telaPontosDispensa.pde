@@ -1,7 +1,8 @@
 // Original global variables
 
 // UI elements
-Button addButtonDispensa, deleteButtonDispensa, editButtonDispensa, scrollUpButtonDispensa, scrollDownButtonDispensa;
+Button addButtonDispensa, deleteButtonDispensa, editButtonDispensa, scrollUpButtonDispensa, scrollDownButtonDispensa, scrollLeftButtonColeta, scrollRightButtonColeta;
+
 
 // -----------------------------------------------------------------------------
 // Build the directional pad (dirPad + segments are from Globals.pde).
@@ -42,13 +43,15 @@ void botao_direcional(float x, float y, float raioMaior, float raioMenor) {
 // Original function - No changes
 void setupTelaPontosDispensa() {
   // Create UI elements (positions approximate)
-  addButtonDispensa    = new Button(true, width - 327, height - 180, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
-  editButtonDispensa   = new Button(true, width - 227, height - 180, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
-  deleteButtonDispensa = new Button(true, width -  127, height - 180, 80, 80, trash,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  addButtonDispensa    = new Button(true, width - 327, height - 140, 80, 80, addicon,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  editButtonDispensa   = new Button(true, width - 227, height - 140, 80, 80, editpen,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+  deleteButtonDispensa = new Button(true, width -  127, height - 140, 80, 80, trash,  azulEscuro); // (square?, x, y, w, h, icon, bgColor)
 
   // Scroll Buttons
-  scrollUpButtonDispensa   = new Button(true, width - 100, height/2 - 150, 40, 40, "↑", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  scrollDownButtonDispensa = new Button(true, width - 100, height/2 + 10, 40, 40, "↓", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollUpButtonDispensa   = new Button(true, width - 100, height/2 - 30, 40, 40, "↑", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollDownButtonDispensa = new Button(true, width - 100, height/2 + 100, 40, 40, "↓", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollLeftButtonColeta   = new Button(true, width - 320, height/2 - 180, 40, 40, "←", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  scrollRightButtonColeta = new Button(true, width - 100, height/2 - 180, 40, 40, "→", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
 
 }
@@ -86,39 +89,89 @@ void desenhaTelaPontosDispensa() {
 
   // 5) Side panel for 'Pontos adicionados'
   fill(brancoBege);
-  rect(width - 340, 70, 300, height - 280, 8);
+  rect(width - 340, 250, 300, height - 400, 8);
 
   fill(azulEscuro);
   textSize(18);
   textAlign(LEFT, CENTER);
-  text("Pontos para Dispensa", width - 310, 100);
+  text("Pontos para Dispensa", width - 310, 235);
+  
+  // 6) Side panel for 'Pontos coleta'
+  
+  fill(brancoBege); 
+  rect(width - 340, 70, 300, 140, 8); 
+  
+  fill(azulEscuro);
+  textSize(18);
+  textAlign(LEFT, CENTER);
+  text("Coletas disponíveis:", width - 310, 55);
+  
+  
+  // 7) Draw ponto de coleta atual (apenas 1 visível)
+  if (listaPontosColeta.size() > 0) {
+    Ponto pontoColeta = listaPontosColeta.get(currentColetaIndex);
+  
+    float yColeta = 115;
+    float paddingHorizontal = 15;
+    float paddingVertical = 8;
+  
+    textSize(16);
+    textAlign(CENTER, CENTER);
+  
+    float textoLargura = textWidth(pontoColeta.nome);
+    float rectLargura = textoLargura + 2 * paddingHorizontal;
+    float rectAltura = 60 + 2 * paddingVertical;
+    float centerX = width - 180; // Centralizado entre as setas
+  
+    // Desenhar o retângulo
+    if (pontoColetaSelecionadoIndex == currentColetaIndex) {
+      fill(azulEscuro); 
+    } else {
+      fill(cinzaClaro);
+    }
+    rect(centerX - rectLargura/2 , yColeta - rectAltura/2 + 20, rectLargura, rectAltura, 10);
+  
+    // Escrever o texto
+    fill(branco);
+    text(pontoColeta.nome, centerX, yColeta + 20);
+  }
 
-  // 6) List of points
+
+
+  // 8) List of points
   drawPointsList(listaPontosDispensa, scrollOffset, false);
 
   // Always show the scroll buttons
   scrollUpButtonDispensa.draw();
   scrollDownButtonDispensa.draw();
+  scrollLeftButtonColeta.draw();
+  scrollRightButtonColeta.draw();
+  
 
-  // 7) Action buttons: add, edit, delete
+  // 9) Action buttons: add, edit, delete
   addButtonDispensa.draw();
   editButtonDispensa.draw();
   deleteButtonDispensa.draw();
 
-  // 8) Draw Lock XY / Lock Z buttons
+  // 10) Draw Lock XY / Lock Z buttons
   lockXYButton.draw();
   lockZButton.draw();
 
-  // 9) Draw backButton
+  // 11) Draw backButton
   backButton.draw(); 
 
-  // 10) Draw Z buttons
+  // 12) Draw Z buttons
   z_plus.draw();
   z_minus.draw();
   z_home.draw();
   
-  // 11) Draw the side panel 
-    drawPointsList(listaPontosDispensa, scrollOffset, false);
+  // 13) Show error (if existis)
+  if (mensagemErroDispensa.length() > 0) {
+    fill(azulClaro); // Cor vermelha para destaque
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(mensagemErroDispensa, width - 220, 200);
+  }
 
 }
 
@@ -174,8 +227,8 @@ void mousePressedTelaMovimentacaoManual() {
   }
 
   // 6) Points list checkboxes
-  int startY   = 150;
-  int itemH    = 40;
+  int startY   = 280;
+  int itemH    = 35;
   int endIndex = min(listaPontosDispensa.size(), scrollOffset + maxVisiblePoints);
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
@@ -220,6 +273,46 @@ void mousePressedTelaMovimentacaoManual() {
   if (xy_home.isMouseOver()){
    xy_home.isPressed = true;
    return;
+  }
+  
+  
+  // 10) Clique no ponto de coleta atual
+  if (listaPontosColeta.size() > 0) {
+    Ponto pontoColeta = listaPontosColeta.get(currentColetaIndex);
+  
+    float yColeta = 150;
+    textSize(16);
+    textAlign(CENTER, CENTER);
+  
+    float textoLargura = textWidth(pontoColeta.nome);
+    float rectLargura = textoLargura + 50;
+    float rectAltura = 60;
+    float centerX = width - 180;
+  
+    float rectX = centerX - rectLargura/2;
+    float rectYTop = yColeta - rectAltura/2 - 30 ;
+    float rectYBottom = yColeta + rectAltura/2;
+  
+  if (mouseX >= rectX && mouseX <= rectX + rectLargura && mouseY >= rectYTop && mouseY <= rectYBottom) {
+    if (pontoColetaSelecionadoIndex == currentColetaIndex) {
+      // Já estava selecionado -> desselecionar
+      pontoColetaSelecionadoIndex = -1;
+      println("Deselecionado ponto de coleta: " + pontoColeta.nome);
+    } else {
+      // Novo ponto selecionado
+      pontoColetaSelecionadoIndex = currentColetaIndex;
+      println("Ponto de Coleta Selecionado: " + pontoColeta.nome);
+    }
+    return;
+  }
+  }
+  if (scrollLeftButtonColeta.isMouseOver()) {
+  scrollLeftButtonColeta.isPressed = true;
+  return;
+  }
+  if (scrollRightButtonColeta.isMouseOver()) {
+    scrollRightButtonColeta.isPressed = true;
+    return;
   }
 
 }
@@ -325,11 +418,31 @@ void mouseReleasedTelaMovimentacaoManual() {
   }
 
   // 4) Action buttons: add, edit, delete
-  if (addButtonDispensa.isPressed) {
-    addButtonDispensa.isPressed = false;
-      
-    addNewPoint(listaPontosDispensa, "Dispensa", false, coordenadas, coordenadasColeta); 
+if (addButtonDispensa.isPressed) {
+  addButtonDispensa.isPressed = false;
+
+  if (pontoColetaSelecionadoIndex >= 0 && pontoColetaSelecionadoIndex < listaPontosColeta.size()) {
+    // Existe coleta selecionada -> adicionar dispensa
+    int[] coordsColetaAssociada = listaPontosColeta.get(pontoColetaSelecionadoIndex).coords;
+
+    addNewPoint(listaPontosDispensa, "Dispensa", false, coordenadas, coordsColetaAssociada);
+
+    println("Updated Dispensa " + nf(listaPontosDispensa.size(), 2) + 
+            " coords to ( " + coordenadas[0] + ", " + coordenadas[1] + ", " + coordenadas[2] + 
+            " ) -> Associated Coleta: ( " + 
+            coordsColetaAssociada[0] + ", " + coordsColetaAssociada[1] + ", " + coordsColetaAssociada[2] + " )");
+
+    // LIMPA qualquer mensagem de erro anterior
+    mensagemErroDispensa = "";
+    
+  } else {
+    // Nenhum ponto de coleta selecionado -> mostrar mensagem de erro
+    mensagemErroDispensa = "Selecione um ponto de coleta";
+    println("Nenhum ponto de coleta selecionado!");
   }
+}
+
+
   if (editButtonDispensa.isPressed) {
     editButtonDispensa.isPressed = false;
     
@@ -413,7 +526,21 @@ void mouseReleasedTelaMovimentacaoManual() {
      coordenadas[1] = 0;
    }
   }
-
+  
+  // 8) Scroll Left/Right for pontos de coleta
+  if (scrollLeftButtonColeta.isPressed) {
+    if (currentColetaIndex > 0) {
+      currentColetaIndex--;
+    }
+    scrollLeftButtonColeta.isPressed = false;
+  }
+  
+  if (scrollRightButtonColeta.isPressed) {
+    if (currentColetaIndex < listaPontosColeta.size() - 1) {
+      currentColetaIndex++;
+    }
+    scrollRightButtonColeta.isPressed = false;
+  }
 }
 
 
@@ -429,7 +556,7 @@ void mouseReleasedTelaMovimentacaoManual() {
 // -----------------------------------------------------------------------------
 // Generate the final list of lists: [[x1,y1,z1,qt1,x_coleta,y_coleta,z_coleta], ...]
 // -----------------------------------------------------------------------------
-ArrayList<int[]> gerarListaFormatoFinal() {
+  ArrayList<int[]> gerarListaFormatoFinal() {
   
   ArrayList<int[]> listaFinal = new ArrayList<int[]>();
 

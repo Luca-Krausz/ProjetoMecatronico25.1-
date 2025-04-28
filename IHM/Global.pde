@@ -60,7 +60,11 @@ String command = "";
 boolean scrollingUp    = false;
 boolean scrollingDowm  = false;
 int scrollOffset       = 0;
+int scrollOffsetColeta       = 0;
 int selectedPoint      = -1;
+int pontoColetaSelecionadoIndex = -1;
+int currentColetaIndex = 0;
+
 
 // For the scroll arrow buttons 
 boolean hasItemsAbove = false;
@@ -83,15 +87,21 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
+ArrayList<Ponto> listaDispensaFiltrada = new ArrayList<Ponto>(); // filtragem das dispensas conforme coleta
+
 
 // Images / Shapes
 PImage homeXY, homeZ, logo, trash, editpen, addicon, backIcon;
+
 
 // Botão voltar 
 Button backButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
 
 // Botão de Precisão
 SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
+
+// Mensagem de erro ao adicionar dispensa sem coleta
+String mensagemErroDispensa = "";
 
 // Porta UART com Raspberry
 Serial porta;
@@ -546,13 +556,22 @@ class Ponto {
 
 
 
-// 7. Funcao Desenha lista de Pontos
+// 7. Funcao Desenha lista de Pontos Coleta
 
 void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScreen) {
-  int listX = width - 340;
+  
+  int y = 0;
+  
+  if (isColetaScreen) {
+      y = 150; 
+    } else {
+      y = 280; 
+    }
+    
+  int startY = y;
   //int listW = 200;
-  int itemH = 40;
-  int startY = 170; 
+  int itemH = 35;
+  int listX = width - 340;
   int textMarginLeft = 10;
   int checkboxSize = 20;
   int checkboxMargin = 10;
@@ -572,12 +591,22 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
   if (hasAbove) {
     fill(cinzaMedio);
     textAlign(CENTER, CENTER);
-    text("^", width - 180, startY - 30);
+    if (isColetaScreen) {
+      text("^", width - 180, startY - 30);
+    }
+    else{
+      text("^", width - 180, startY - 15);
+    }
   }
   if (hasBelow) {
     fill(cinzaMedio);
     textAlign(CENTER, CENTER);
-    text("v", width - 170, startY + maxVisiblePoints * itemH);
+    if (isColetaScreen) {
+      text("v", width - 170, startY + maxVisiblePoints * itemH);
+    }
+    else{
+      text("v", width - 170, startY - 15 + maxVisiblePoints * itemH);
+    }
   }
 
 
