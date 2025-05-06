@@ -87,7 +87,7 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
-ArrayList<Ponto> listaDispensaFiltrada = new ArrayList<Ponto>(); // filtragem das dispensas conforme coleta
+ArrayList<Ponto> listaDispensaFiltrada = new ArrayList<Ponto>(); // filtrando as dispensas conforme coleta
 
 
 // Images / Shapes
@@ -132,7 +132,7 @@ void setup() {
   editpen = loadImage("editpen.png");
   editpen.resize(50,0);
   
-  addicon = loadImage("addicon.png");
+  addicon = loadImage("plus.png");
   addicon.resize(50,0);
   
   backIcon = loadImage("backIcon.png");
@@ -276,7 +276,7 @@ void desenhaBotao(float x, float y, float w, float h,
   text(rotulo, x + w/2, y + h/2);
 }
 
-// 2. Example initialization for manual points
+// 2. Initialization for manual points
 void inicializaListaPontosManual() {
   listaPontosManual.clear();
   listaPontosManual.add("Ponto 01 - 3ml");
@@ -647,17 +647,12 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
       text(ponto.toStringDispensa(), currentX, itemY); // Name + Volume for Dispensa
     }
 
-    // Point Coordinates (Display the point's OWN coordinates)
-    /*String coordsText = ponto.coordsToString();
-    fill(cinzaEscuro);
-    textAlign(CENTER, CENTER);
-    text(coordsText, listX + listW - textMarginLeft, itemY);*/
 
   }
 }
 
 
-// 8. Funcao para adicioanr um ponto na lista
+// 8. Funcao para adicionar um ponto na lista
 
 void addNewPoint(ArrayList<Ponto> list, String baseName, boolean isColetaScreen, int[] currentCoords, int[] associatedCoordsColeta) {
   int nextPointNum = list.size() + 1;
@@ -676,20 +671,15 @@ void addNewPoint(ArrayList<Ponto> list, String baseName, boolean isColetaScreen,
     int defaultVolume = 3; // Or get from UI if needed
     if (associatedCoordsColeta == null) {
         println("ERROR: Cannot add Dispense point without associated Collection point coordinates!");
-        // Maybe show a user message here instead of just printing
-        // Example: showTemporaryMessage("Selecione um ponto de coleta primeiro!");
         return; // Do not add the point
     }
     newPoint = new Ponto(pointName, defaultVolume,
                          currentCoords[0], currentCoords[1], currentCoords[2],
                          associatedCoordsColeta[0], associatedCoordsColeta[1], associatedCoordsColeta[2]);
-    println("Added Dispense Point: " + newPoint.nome + " " + newPoint.coordsToString() + " -> Assoc. Coleta: " + newPoint.coordsColetaToString());
+    //println("Added Dispense Point: " + newPoint.nome + " " + newPoint.coordsToString() + " -> Assoc. Coleta: " + newPoint.coordsColetaToString());
   }
 
   list.add(newPoint);
-  // Note: The global counters (pontosColeta/pontosDispensa) should be updated
-  // AFTER calling this function, based on which list was modified.
-  // Example: if (isColetaScreen) pontosColeta = list.size(); else pontosDispensa = list.size();
 }
 
 

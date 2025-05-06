@@ -111,9 +111,9 @@ void desenhaTelaPontosDispensa() {
   if (listaPontosColeta.size() > 0) {
     Ponto pontoColeta = listaPontosColeta.get(currentColetaIndex);
   
-    float yColeta = 115;
-    float paddingHorizontal = 15;
-    float paddingVertical = 8;
+    float yColeta = 120;
+    float paddingHorizontal = 20;
+    float paddingVertical = 10;
   
     textSize(16);
     textAlign(CENTER, CENTER);
@@ -121,7 +121,7 @@ void desenhaTelaPontosDispensa() {
     float textoLargura = textWidth(pontoColeta.nome);
     float rectLargura = textoLargura + 2 * paddingHorizontal;
     float rectAltura = 60 + 2 * paddingVertical;
-    float centerX = width - 180; // Centralizado entre as setas
+    float centerX = width - 190; // Centralizado entre as setas
   
     // Desenhar o retângulo
     if (pontoColetaSelecionadoIndex == currentColetaIndex) {
@@ -139,7 +139,25 @@ void desenhaTelaPontosDispensa() {
 
 
   // 8) List of points
-  drawPointsList(listaPontosDispensa, scrollOffset, false);
+  // Filtrar pontos de dispensa pela coleta selecionada 
+  if (pontoColetaSelecionadoIndex >= 0 && pontoColetaSelecionadoIndex < listaPontosColeta.size()) {
+    int[] coordsSelecionada = listaPontosColeta.get(pontoColetaSelecionadoIndex).coords;
+  
+    ArrayList<Ponto> pontosFiltrados = new ArrayList<Ponto>();
+    for (Ponto p : listaPontosDispensa) {
+      int[] c = p.coordsColeta;
+      if (c[0] == coordsSelecionada[0] && c[1] == coordsSelecionada[1] && c[2] == coordsSelecionada[2]) {
+        pontosFiltrados.add(p);
+      }
+    }
+  
+    drawPointsList(pontosFiltrados, scrollOffset, false);
+  } else {
+    // Nenhuma coleta selecionada: lista vazia
+    drawPointsList(new ArrayList<Ponto>(), scrollOffset, false);
+  }
+
+  
 
   // Always show the scroll buttons
   scrollUpButtonDispensa.draw();
@@ -167,11 +185,25 @@ void desenhaTelaPontosDispensa() {
   
   // 13) Show error (if existis)
   if (mensagemErroDispensa.length() > 0) {
-    fill(azulClaro); // Cor vermelha para destaque
+    fill(azulClaro); // Cor azul para destaque
     textSize(16);
     textAlign(CENTER, CENTER);
     text(mensagemErroDispensa, width - 220, 200);
   }
+  
+   //DEBUG: Printar todos os pontos de dispensa criados
+  //for (int i = 0; i < listaPontosDispensa.size(); i++) {
+  //var ponto = listaPontosDispensa.get(i); // tipo real não declarado
+  //println("Dispensa " + (i+1) + ": (" + 
+  //        ponto.coords[0] + ", " + 
+  //        ponto.coords[1] + ", " + 
+  //        ponto.coords[2] + 
+  //        ") -> Associada à coleta "  + ": (" +
+  //        ponto.coordsColeta[0] + ", " +
+  //        ponto.coordsColeta[1] + ", " +
+  //        ponto.coordsColeta[2] + 
+  //        "), Volume: " + ponto.volume + " mL");
+  //}
 
 }
 
@@ -317,7 +349,6 @@ void mousePressedTelaMovimentacaoManual() {
 
 }
 
-
 // -----------------------------------------------------------------------------
 //                                MOUSE RELEASED
 // -----------------------------------------------------------------------------
@@ -426,11 +457,13 @@ if (addButtonDispensa.isPressed) {
     int[] coordsColetaAssociada = listaPontosColeta.get(pontoColetaSelecionadoIndex).coords;
 
     addNewPoint(listaPontosDispensa, "Dispensa", false, coordenadas, coordsColetaAssociada);
-
-    println("Updated Dispensa " + nf(listaPontosDispensa.size(), 2) + 
+    
+    println("Added Dispensa " + nf(listaPontosDispensa.size(), 2) + 
             " coords to ( " + coordenadas[0] + ", " + coordenadas[1] + ", " + coordenadas[2] + 
-            " ) -> Associated Coleta: ( " + 
+            " ) -> Associated Coleta " + (pontoColetaSelecionadoIndex + 1) + ": ( " + 
             coordsColetaAssociada[0] + ", " + coordsColetaAssociada[1] + ", " + coordsColetaAssociada[2] + " )");
+    
+
 
     // LIMPA qualquer mensagem de erro anterior
     mensagemErroDispensa = "";
@@ -451,7 +484,8 @@ if (addButtonDispensa.isPressed) {
   if (deleteButtonDispensa.isPressed) {
     deleteButtonDispensa.isPressed = false;
     
-    deleteSelectedPoints(listaPontosDispensa, scrollOffset, "Dispensa");   
+    deleteSelectedPoints(listaPontosDispensa, scrollOffset, "Dispensa");
+    pontosDispensa = listaPontosDispensa.size();
   }
 
   // 5) Back Button
@@ -542,6 +576,10 @@ if (addButtonDispensa.isPressed) {
     scrollRightButtonColeta.isPressed = false;
   }
 }
+
+// Atualizando os pontos de dispensa relacionados a coleta
+
+
 
 
 // -----------------------------------------------------------------------------

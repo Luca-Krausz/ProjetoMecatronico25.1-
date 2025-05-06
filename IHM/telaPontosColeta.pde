@@ -62,12 +62,12 @@ void desenhaTelaPontosColeta() {
 
   // 8) Side panel background for 'Pontos adicionados'
   fill(brancoBege);
-  rect(width - 340, 70, 300, height - 280, 8);
+  rect(width - 340, 70, 300, height - 260, 8);
 
   fill(azulEscuro);
-  textSize(18);
+  textSize(20);
   textAlign(LEFT, CENTER);
-  text("Pontos para Coleta", width - 310, 100);
+  text("Pontos para Coleta:", width - 300, 100);
 
   // 6) List of collection points
   drawPointsList(listaPontosColeta, scrollOffset, true); // Use the specific drawing function
@@ -360,6 +360,7 @@ void mouseReleasedTelaPontosColeta() {
       addNewPoint(listaPontosColeta, "Coletas", true, coordenadas, null);
       pontosColeta = listaPontosColeta.size();
     }
+    
     
     if (deleteButtonColeta.isPressed){
        deleteButtonColeta.isPressed = false;
