@@ -64,6 +64,10 @@ int scrollOffsetColeta       = 0;
 int selectedPoint      = -1;
 int pontoColetaSelecionadoIndex = -1;
 int currentColetaIndex = 0;
+boolean coordsIguais(int[] a, int[] b) {
+  return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+} // Conferencia caso haja pontos de coleta duplicados
+
 
 
 // For the scroll arrow buttons 
@@ -100,8 +104,9 @@ Button backButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
 // Botão de Precisão
 SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
 
-// Mensagem de erro ao adicionar dispensa sem coleta
+// Mensagem de erro ao adicionar dispensa sem coleta ou coleta duplicada
 String mensagemErroDispensa = "";
+String mensagemErroColeta = "";
 
 // Porta UART com Raspberry
 Serial porta;

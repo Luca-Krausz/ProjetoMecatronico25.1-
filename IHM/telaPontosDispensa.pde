@@ -261,16 +261,29 @@ void mousePressedTelaMovimentacaoManual() {
   // 6) Points list checkboxes
   int startY   = 280;
   int itemH    = 35;
-  int endIndex = min(listaPontosDispensa.size(), scrollOffset + maxVisiblePoints);
+  // Filtrar pontos para checar checkboxes corretamente
+  ArrayList<Ponto> pontosFiltrados = new ArrayList<Ponto>();
+  if (pontoColetaSelecionadoIndex >= 0 && pontoColetaSelecionadoIndex < listaPontosColeta.size()) {
+    int[] coordsSelecionada = listaPontosColeta.get(pontoColetaSelecionadoIndex).coords;
+  
+    for (Ponto p : listaPontosDispensa) {
+      int[] c = p.coordsColeta;
+      if (c[0] == coordsSelecionada[0] && c[1] == coordsSelecionada[1] && c[2] == coordsSelecionada[2]) {
+        pontosFiltrados.add(p);
+      }
+    }
+  }
+  
+  int endIndex = min(pontosFiltrados.size(), scrollOffset + maxVisiblePoints);
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
-    // Original checkbox click area
     if (mouseX >= width - 320 && mouseX <= width - 300 &&
         mouseY >= y - 10 && mouseY <= y + 10) {
-      listaPontosDispensa.get(i).selected = !listaPontosDispensa.get(i).selected;
+      pontosFiltrados.get(i).selected = !pontosFiltrados.get(i).selected;
       return;
     }
   }
+
 
   // 7) Action buttons: add, edit, delete
   if (addButtonDispensa.isMouseOver()) {

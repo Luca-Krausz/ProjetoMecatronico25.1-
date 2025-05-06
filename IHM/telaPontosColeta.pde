@@ -80,6 +80,14 @@ void desenhaTelaPontosColeta() {
   addButtonColeta.draw();
   editButtonColeta.draw();
   deleteButtonColeta.draw();
+  
+  // 8) Show error (if existis)
+  if (mensagemErroColeta.length() > 0) {
+    fill(azulClaro); // Cor azul para destaque
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(mensagemErroColeta, width - 220, 390);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -355,11 +363,27 @@ void mouseReleasedTelaPontosColeta() {
   // 6) Action buttons: add, edit, delete (Coleta List)
     
     if (addButtonColeta.isPressed){
-       addButtonColeta.isPressed = false;
-      
-      addNewPoint(listaPontosColeta, "Coletas", true, coordenadas, null);
-      pontosColeta = listaPontosColeta.size();
+      addButtonColeta.isPressed = false;
+    
+      boolean jaExiste = false;
+      for (Ponto p : listaPontosColeta) {
+        if (coordsIguais(p.coords, coordenadas)) {
+          jaExiste = true;
+          break;
+        }
+      }
+    
+      if (jaExiste) {
+        println("Erro: já existe um ponto de coleta com essas coordenadas.");
+        mensagemErroColeta = "Ponto de coleta já adicionado!";
+      } else {
+        addNewPoint(listaPontosColeta, "Coleta", true, coordenadas, null);
+        pontosColeta = listaPontosColeta.size();
+        
+        mensagemErroColeta = ""; // Limpa erro anterior
+      }
     }
+
     
     
     if (deleteButtonColeta.isPressed){
