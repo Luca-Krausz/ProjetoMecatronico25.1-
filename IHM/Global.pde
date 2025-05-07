@@ -33,6 +33,7 @@ boolean telaPipetagem      = false;
 boolean telaPontosColeta   = false;
 boolean telaPontosDispensa = false;
 boolean telaReferenciarI2C = false;
+boolean telaEditaPontos = false;
 boolean pressedPontoColeta = false;
 boolean pressedPontoDispensa = false;
 boolean pressedIniciarPipetagem = false;
@@ -43,7 +44,7 @@ boolean pressedPontosTotaisColeta = false;
 // Variaveis globais
 int pontosColeta         = 0;
 int pontosDispensa       = 0;
-int tempoRestante        = 50;
+int tempoRestante        = 50; // EDITAR ESSA PARTE SEGUNDO FORMULA DE DESLOCAMENTO DA MAQUINA
 boolean pipetagemAtiva   = false;
 boolean pipetagemPausada = false;
 boolean inicio_config    = false;
@@ -91,14 +92,14 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
-ArrayList<Ponto> listaDispensaFiltrada = new ArrayList<Ponto>(); // filtrando as dispensas conforme coleta
+
 
 
 // Images / Shapes
 PImage homeXY, homeZ, logo, trash, editpen, addicon, backIcon;
 
 
-// Botão voltar 
+// Botões
 Button backButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
 
 // Botão de Precisão
@@ -147,7 +148,7 @@ void setup() {
   backButton = new Button(false, width - 30, 35, 40, 40, backIcon, azulEscuro); // (square?, x, y, w, h, icon, bgColor)
     
   // Any array initializations
-  inicializaListaPontosManual();
+  //inicializaListaPontosManual();
   
   // Initialize precision selector using the global precisionLabels array
   color[] precisionColors = {verdeBotao, verdeBotao, verdeBotao};
@@ -209,6 +210,9 @@ void draw() {
   else if (telaPontosColeta) {
     desenhaTelaPontosColeta(); 
   }
+  else if (telaEditaPontos) {
+    desenhaTelaEditaPontos(); 
+  }
   else {
     // fallback
     desenhaTelaPipetagem();
@@ -236,6 +240,9 @@ void mousePressed() {
   else if(telaPontosColeta) {
    mousePressedTelaPontosColeta(); 
   }
+  else if(telaEditaPontos) {
+   mousePressedTelaEditaPontos(); 
+  }
 }
 
 // ------------------ MAIN MOUSERELEASED ------------------
@@ -260,6 +267,9 @@ void mouseReleased() {
   else if(telaPontosColeta){
    mouseReleasedTelaPontosColeta(); 
   }
+  else if(telaEditaPontos){
+   mouseReleasedTelaEditaPontos(); 
+  }
 }
 
 
@@ -281,16 +291,16 @@ void desenhaBotao(float x, float y, float w, float h,
   text(rotulo, x + w/2, y + h/2);
 }
 
-// 2. Initialization for manual points
-void inicializaListaPontosManual() {
-  listaPontosManual.clear();
-  listaPontosManual.add("Ponto 01 - 3ml");
-  listaPontosManual.add("Ponto 02 - 5ml");
+//// 2. Initialization for manual points
+//void inicializaListaPontosManual() {
+//  listaPontosManual.clear();
+//  listaPontosManual.add("Ponto 01 - 3ml");
+//  listaPontosManual.add("Ponto 02 - 5ml");
 
-  listaPontosManualChecked.clear();
-  listaPontosManualChecked.add(true);
-  listaPontosManualChecked.add(false);
-}
+//  listaPontosManualChecked.clear();
+//  listaPontosManualChecked.add(true);
+//  listaPontosManualChecked.add(false);
+//}
 
 
 
