@@ -1,5 +1,0 @@
-BUILD
-.mbed
-compile_commands.json
-.clangd
-.cache
