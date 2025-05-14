@@ -21,10 +21,10 @@ void setupTelaPipetagem() {
 
 
 void desenhaTelaPipetagem() {
-  // Ex: exibe um logo no topo direito, se existente
   if (logo != null) {
-    image(logo, width - logo.width - -30, -30);
+    image(logo, width - logo.width - 900, -40);
   }
+    backButton.draw();
 
   // Título
   fill(0);
@@ -73,6 +73,12 @@ void desenhaTelaPipetagem() {
 //                           'Mouse pressed' for tela pipetagem 
 //----------------------------------------------------------------------------------------
 void mousePressedPipetagem() {
+  
+  if (backButton != null && backButton.isMouseOver()) {
+    backButton.isPressed = true;
+    return; // Handled
+  }
+  
   if (AddColeta.isMouseOver()) {
     AddColeta.isPressed = true;
     return;
@@ -102,6 +108,14 @@ void mousePressedPipetagem() {
 //                           'Mouse released' for tela pipetagem 
 //----------------------------------------------------------------------------------------
 void mouseReleasedPipetagem() {
+
+  if (backButton.isPressed && backButton != null){
+   backButton.isPressed = false;
+   
+   telaPipetagem = false;
+   telaReferenciar = true;
+  }
+  
   if (AddColeta.isPressed) {
     AddColeta.isPressed = false;
     

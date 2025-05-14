@@ -15,6 +15,10 @@ void setupReferenciar(){
 
 void desenhaTelaReferenciar() {
   background(branco);
+  
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
 
   // Caixa central
   float caixaLarg = 600;

@@ -12,6 +12,10 @@ void setupRefI2C(){
 
 void desenhaRefI2C() {
   background(branco);
+  
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
 
   // Caixa de mensagem
   float caixaX    = (width - 800)/2;

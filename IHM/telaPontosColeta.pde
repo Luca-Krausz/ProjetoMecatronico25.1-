@@ -2,7 +2,6 @@
 
 Button addButtonColeta, deleteButtonColeta, editButtonColeta, scrollDownButtonColeta, scrollUpButtonColeta;
 
-
 // -----------------------------------------------------------------------------
 // Setup function for 'TelaPontosColeta' - Initializes only screen-specific UI
 // Called once from the main setup() in Globals.pde
@@ -23,7 +22,10 @@ void setupTelaPontosColeta() {
 // -----------------------------------------------------------------------------
 void desenhaTelaPontosColeta() {
   background(branco); // Clear background
-
+  
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
   // 1) Draw the precision selector (Shared)
   precisionSelector.draw();
 
@@ -164,7 +166,7 @@ void mousePressedTelaPontosColeta() {
     return;
   }
   
-  // 6) Points list checkboxes
+  // 7) Points list checkboxes
   int startY   = 150;
   int itemH    = 35;
   int endIndex = min(listaPontosColeta.size(), scrollOffset + maxVisiblePoints);
@@ -178,7 +180,7 @@ void mousePressedTelaPontosColeta() {
     }
   }
 
-  // 9) Action Buttons (Coleta: Add, Edit, Delete)
+  // 8) Action Buttons (Coleta: Add, Edit, Delete)
   if (addButtonColeta.isMouseOver()) {
     addButtonColeta.isPressed = true;
     pontosColeta++; // Original logic increments here
@@ -395,12 +397,9 @@ void mouseReleasedTelaPontosColeta() {
     
     if (editButtonColeta.isPressed){
       editButtonColeta.isPressed = false; 
+      setupTelaEditaPontos();
       
       editSelectedPoints(listaPontosColeta, true, coordenadas, null);
-       // troca de tela
-       // setupEditarPonto();
-       // telaPontosColeta = false;
-       // telaEditarPonto = true;
        
     }
 

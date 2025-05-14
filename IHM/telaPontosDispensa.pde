@@ -3,7 +3,6 @@
 // UI elements
 Button addButtonDispensa, deleteButtonDispensa, editButtonDispensa, scrollUpButtonDispensa, scrollDownButtonDispensa, scrollLeftButtonColeta, scrollRightButtonColeta;
 
-
 // -----------------------------------------------------------------------------
 // Build the directional pad (dirPad + segments are from Globals.pde).
 // -----------------------------------------------------------------------------
@@ -62,6 +61,10 @@ void setupTelaPontosDispensa() {
 
 void desenhaTelaPontosDispensa() {
   background(branco);
+  
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
 
   // 1) Draw the precision selector
   precisionSelector.draw();
@@ -491,6 +494,7 @@ if (addButtonDispensa.isPressed) {
 
   if (editButtonDispensa.isPressed) {
     editButtonDispensa.isPressed = false;
+    setupTelaEditaPontos();
     
     editSelectedPoints(listaPontosDispensa, false, coordenadas, coordenadasColeta); 
   }
@@ -589,10 +593,6 @@ if (addButtonDispensa.isPressed) {
     scrollRightButtonColeta.isPressed = false;
   }
 }
-
-// Atualizando os pontos de dispensa relacionados a coleta
-
-
 
 
 // -----------------------------------------------------------------------------

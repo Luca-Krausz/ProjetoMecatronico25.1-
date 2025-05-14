@@ -62,9 +62,11 @@ boolean scrollingUp    = false;
 boolean scrollingDowm  = false;
 int scrollOffset       = 0;
 int scrollOffsetColeta       = 0;
+int editScrollOffset = 0;
 int selectedPoint      = -1;
 int pontoColetaSelecionadoIndex = -1;
 int currentColetaIndex = 0;
+boolean edicaoColetaEdit = false;
 boolean coordsIguais(int[] a, int[] b) {
   return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 } // Conferencia caso haja pontos de coleta duplicados
@@ -92,6 +94,18 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
+
+
+// Para edição na telaEditaPontos:
+Ponto pontoSelecionado = null;             // o ponto que estamos editando
+boolean focusNome   = false;               // qual campo está ativo
+boolean focusVolume = false;
+String inputNomeEdit   = "";
+String inputVolumeEdit = "";
+
+// Para navegação no painel inferior:
+ArrayList<Ponto> listaAssociadas = new ArrayList<Ponto>();
+int assocIndex = 0;
 
 
 
@@ -206,9 +220,11 @@ void draw() {
   }
   else if (telaPontosDispensa) {
     desenhaTelaPontosDispensa();
+    edicaoColetaEdit = false;
   }
   else if (telaPontosColeta) {
     desenhaTelaPontosColeta(); 
+    edicaoColetaEdit = true;
   }
   else if (telaEditaPontos) {
     desenhaTelaEditaPontos(); 
@@ -291,20 +307,8 @@ void desenhaBotao(float x, float y, float w, float h,
   text(rotulo, x + w/2, y + h/2);
 }
 
-//// 2. Initialization for manual points
-//void inicializaListaPontosManual() {
-//  listaPontosManual.clear();
-//  listaPontosManual.add("Ponto 01 - 3ml");
-//  listaPontosManual.add("Ponto 02 - 5ml");
 
-//  listaPontosManualChecked.clear();
-//  listaPontosManualChecked.add(true);
-//  listaPontosManualChecked.add(false);
-//}
-
-
-
-// 3. 'Voltar' round button
+// 2. 'Voltar' round button
 void desenhaBotaoVoltar(float cx, float cy, float diameter) {
   fill(azulEscuro);
   noStroke();
@@ -318,7 +322,7 @@ void desenhaBotaoVoltar(float cx, float cy, float diameter) {
 
 
 
-// 4. Classe "Botao precisao" 
+// 3. Classe "Botao precisao" 
 class SegmentedButton {
   float x, y, w, h;
   String[] labels;
@@ -429,7 +433,7 @@ class SegmentedButton {
 
 
 
-// 5. Classe botao
+// 4. Classe botao
 class Button {
   float x, y, w, h;
   String label;
@@ -760,7 +764,18 @@ void editSelectedPoints(ArrayList<Ponto> list, boolean isColetaScreen, int[] cur
     println("No points selected to edit.");
     return;
   }
-
+  
+  else {
+    if (!isColetaScreen) {
+      telaPontosDispensa = false;
+      telaEditaPontos = true;
+    }   
+    else {
+    telaPontosColeta = false;
+    telaEditaPontos = true;
+    }
+  }
+  
   println("Editing " + pointsToEdit.size() + " selected point(s)...");
 
   for (Ponto point : pointsToEdit) {
@@ -782,8 +797,6 @@ void editSelectedPoints(ArrayList<Ponto> list, boolean isColetaScreen, int[] cur
       }
     }
     println(); // Newline for next point message
-
-    point.selected = false; // Deselect after editing
   }
    println("Edit complete.");
    // Option B: Navigate to a dedicated editing screen would go here instead

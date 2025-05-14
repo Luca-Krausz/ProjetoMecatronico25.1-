@@ -20,6 +20,10 @@ void desenhaTelaInicio() {
   // Left side (white background)
   fill(branco);
   rect(0, 0, 560, janelaAltura);
+  
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
 
   textSize(fontTitulo);
   fill(azulEscuro);
