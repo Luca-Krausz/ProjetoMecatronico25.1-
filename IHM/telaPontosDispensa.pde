@@ -6,7 +6,6 @@ Button addButtonDispensa, deleteButtonDispensa, editButtonDispensa, scrollUpButt
 // -----------------------------------------------------------------------------
 // Build the directional pad (dirPad + segments are from Globals.pde).
 // -----------------------------------------------------------------------------
-// Original function - No changes
 void botao_direcional(float x, float y, float raioMaior, float raioMenor) {
   dirPad = createShape(GROUP);
 
@@ -194,20 +193,6 @@ void desenhaTelaPontosDispensa() {
     text(mensagemErroDispensa, width - 220, 200);
   }
   
-   //DEBUG: Printar todos os pontos de dispensa criados
-  //for (int i = 0; i < listaPontosDispensa.size(); i++) {
-  //var ponto = listaPontosDispensa.get(i); // tipo real não declarado
-  //println("Dispensa " + (i+1) + ": (" + 
-  //        ponto.coords[0] + ", " + 
-  //        ponto.coords[1] + ", " + 
-  //        ponto.coords[2] + 
-  //        ") -> Associada à coleta "  + ": (" +
-  //        ponto.coordsColeta[0] + ", " +
-  //        ponto.coordsColeta[1] + ", " +
-  //        ponto.coordsColeta[2] + 
-  //        "), Volume: " + ponto.volume + " mL");
-  //}
-
 }
 
 
@@ -264,7 +249,7 @@ void mousePressedTelaMovimentacaoManual() {
   // 6) Points list checkboxes
   int startY   = 280;
   int itemH    = 35;
-  // Filtrar pontos para checar checkboxes corretamente
+  // Filtrar pontos para checar checkboxes
   ArrayList<Ponto> pontosFiltrados = new ArrayList<Ponto>();
   if (pontoColetaSelecionadoIndex >= 0 && pontoColetaSelecionadoIndex < listaPontosColeta.size()) {
     int[] coordsSelecionada = listaPontosColeta.get(pontoColetaSelecionadoIndex).coords;
@@ -494,10 +479,12 @@ if (addButtonDispensa.isPressed) {
 
   if (editButtonDispensa.isPressed) {
     editButtonDispensa.isPressed = false;
-    setupTelaEditaPontos();
-    
-    editSelectedPoints(listaPontosDispensa, false, coordenadas, coordenadasColeta); 
+    edicaoColetaEdit = false;      // sinaliza edição de dispensa
+    setupTelaEditaPontos();        // inicializa listaEditavel
+    telaPontosDispensa = false;
+    telaEditaPontos    = true;
   }
+
   if (deleteButtonDispensa.isPressed) {
     deleteButtonDispensa.isPressed = false;
     

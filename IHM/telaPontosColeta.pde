@@ -173,7 +173,7 @@ void mousePressedTelaPontosColeta() {
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
     // Original checkbox click area
-    if (mouseX >= width - 320 && mouseX <= width - 300 &&
+    if (mouseX >= width - 340 && mouseX <= width - 300 &&
         mouseY >= y - 10 && mouseY <= y + 10) {
       listaPontosColeta.get(i).selected = !listaPontosColeta.get(i).selected;
       return;
@@ -326,14 +326,12 @@ void mouseReleasedTelaPontosColeta() {
         println("porta inválida"); 
      }
      coordenadas[2] = 0;
-     //coordenadas[2] = constrain(coordenadas[2], minZ, maxZ); (Original comment)
    }
   }
 
   // 4) Button Home for X & Y axis
   if (xy_home.isPressed){
    xy_home.isPressed = false; // Reset state first
-   // Original logic doesn't check isMouseOver on release
    if (!xyLocked){
      command = "XYH\r";
      if (porta != null) {
@@ -396,11 +394,11 @@ void mouseReleasedTelaPontosColeta() {
     }
     
     if (editButtonColeta.isPressed){
-      editButtonColeta.isPressed = false; 
-      setupTelaEditaPontos();
-      
-      editSelectedPoints(listaPontosColeta, true, coordenadas, null);
-       
+      editButtonColeta.isPressed = false;
+      edicaoColetaEdit = true;        // sinaliza edição de coleta
+      setupTelaEditaPontos();         // inicializa listaEditavel
+      telaPontosColeta = false;
+      telaEditaPontos  = true;
     }
 
   

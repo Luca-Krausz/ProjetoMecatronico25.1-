@@ -62,7 +62,6 @@ boolean scrollingUp    = false;
 boolean scrollingDowm  = false;
 int scrollOffset       = 0;
 int scrollOffsetColeta       = 0;
-int editScrollOffset = 0;
 int selectedPoint      = -1;
 int pontoColetaSelecionadoIndex = -1;
 int currentColetaIndex = 0;
@@ -94,19 +93,6 @@ ArrayList<String>  listaPontosManual        = new ArrayList<String>();
 ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
-
-
-// Para edição na telaEditaPontos:
-Ponto pontoSelecionado = null;             // o ponto que estamos editando
-boolean focusNome   = false;               // qual campo está ativo
-boolean focusVolume = false;
-String inputNomeEdit   = "";
-String inputVolumeEdit = "";
-
-// Para navegação no painel inferior:
-ArrayList<Ponto> listaAssociadas = new ArrayList<Ponto>();
-int assocIndex = 0;
-
 
 
 // Images / Shapes
