@@ -112,6 +112,27 @@ String mensagemErroColeta = "";
 // Porta UART com Raspberry
 Serial porta;
 
+// Gera string agrupando dispensas por coleta:
+String gerarStringColetasDispensas() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < listaPontosColeta.size(); i++) {
+        Ponto coleta = listaPontosColeta.get(i);
+        sb.append("coleta ").append(i + 1).append(": ");
+        boolean primeiro = true;
+        for (int j = 0; j < listaPontosDispensa.size(); j++) {
+            Ponto disp = listaPontosDispensa.get(j);
+            if (coordsIguais(disp.coordsColeta, coleta.coords)) {
+                if (!primeiro) sb.append(", ");
+                sb.append("dispensa ").append(j + 1);
+                primeiro = false;
+            }
+        }
+        if (i < listaPontosColeta.size() - 1) sb.append("\n");
+    }
+    return sb.toString();
+}
+
+
 
 // ------------------ SETTINGS & SETUP ------------------
 void settings() {
@@ -146,9 +167,6 @@ void setup() {
   
   // Back Button
   backButton = new Button(false, width - 30, 35, 40, 40, backIcon, azulEscuro); // (square?, x, y, w, h, icon, bgColor)
-    
-  // Any array initializations
-  //inicializaListaPontosManual();
   
   // Initialize precision selector using the global precisionLabels array
   color[] precisionColors = {verdeBotao, verdeBotao, verdeBotao};
@@ -556,6 +574,27 @@ class Ponto {
    String coordsColetaToString() {
       return "( " + coordsColeta[0] + ", " + coordsColeta[1] + ", " + coordsColeta[2] + " )";
   }
+
+// 3. Gera string agrupando dispensas por coleta, usando nomes editáveis
+String gerarStringColetasDispensas() {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < listaPontosColeta.size(); i++) {
+    Ponto coleta = listaPontosColeta.get(i);
+    sb.append(coleta.nome).append(": ");
+    boolean primeiro = true;
+    for (int j = 0; j < listaPontosDispensa.size(); j++) {
+      Ponto disp = listaPontosDispensa.get(j);
+      if (coordsIguais(disp.coordsColeta, coleta.coords)) {
+        if (!primeiro) sb.append(", ");
+        sb.append(disp.nome);
+        primeiro = false;
+      }
+    }
+    if (i < listaPontosColeta.size() - 1) sb.append("\n");
+  }
+  return sb.toString();
+}
+
 }
 
 
@@ -574,7 +613,6 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
     }
     
   int startY = y;
-  //int listW = 200;
   int itemH = 35;
   int listX = width - 340;
   int textMarginLeft = 10;

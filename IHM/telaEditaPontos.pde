@@ -15,6 +15,25 @@ int assocIndex = 0;
 int  editScrollOffset = 0;
 final int maxVisibleEdit = 10;
 
+// ---------------------------------
+// Captura de teclado 
+// ---------------------------------
+void keyTyped() {
+  if (!telaEditaPontos) return;
+  if (focusNome) {
+    if (key == BACKSPACE && inputNomeEdit.length() > 0)
+      inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length()-1);
+    else if (key >= ' ' && key <= '~')
+      inputNomeEdit += key;
+  } else if (focusVolume) {
+    if (key == BACKSPACE && inputVolumeEdit.length() > 0)
+      inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length()-1);
+    else if (key >= '0' && key <= '9')
+      inputVolumeEdit += key;
+  }
+}
+
+
 // ------------------------------------------------------------------
 // Setup da tela Edita Pontos dependendo se esta editando coleta ou dispensa
 // ------------------------------------------------------------------
@@ -27,6 +46,17 @@ void setupTelaEditaPontos() {
   } else {
     for (Ponto p : listaPontosDispensa)
       if (p.selected) listaEditavel.add(p);
+  }
+  
+  // Se for edição de Dispensa, já aponta assocIndex para a coleta atualmente
+  if (!edicaoColetaEdit && listaEditavel.size() > 0) {
+    Ponto d = listaEditavel.get(0);  // só deveria haver 1 ou poucos selecionados
+    for (int i = 0; i < listaPontosColeta.size(); i++) {
+      if (coordsIguais(listaPontosColeta.get(i).coords, d.coordsColeta)) {
+        assocIndex = i;
+        break;
+      }
+    }
   }
 
   // Definindo variáveis para tornar mais fácil a edicao
@@ -141,10 +171,10 @@ void desenhaTelaEditaPontos() {
   else {
     assocIndex = constrain(assocIndex, 0, listaAssociadas.size()-1);
     fill(azulEscuro);
-    rect(dx + 140, dy + 5, dh + 10, dh - 10, 10);
+    rect(((2*dx+dw)/2)-((textWidth(listaAssociadas.get(assocIndex).nome)+ 50)/2), dy + 5, textWidth(listaAssociadas.get(assocIndex).nome)+ 50, dh - 10, 10);
     
     fill(branco);
-    text(listaAssociadas.get(assocIndex).nome, dx+150, dy+dh/2);
+    text(listaAssociadas.get(assocIndex).nome, ((2*dx+dw)/2)-((textWidth(listaAssociadas.get(assocIndex).nome))/2), dy+dh/2);
   }
 
   // setas horizontais
@@ -162,16 +192,21 @@ void desenhaTelaEditaPontos() {
 // ---------------------------------
 void mousePressedTelaEditaPontos() {
   // re-declara variaveis que serao utilizadas
-  float px=width-950, py=70, pw=380;
+  float px=width-950, py=70;
   float itemY=py+70, itemH=35;
 
-  // foco em inputs
-  if (mouseX>=600 && mouseX<=1000 && mouseY>=170 && mouseY<=205) {
-    focusNome=true; focusVolume=false; return;
+  // Foco nos campos de texto
+  if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 170 && mouseY <= 205) {
+    focusNome = true;
+    focusVolume = false;
+    return;
   }
-  if (mouseX>=600 && mouseX<=1000 && mouseY>=270 && mouseY<=305) {
-    focusNome=false; focusVolume=true; return;
+  if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 270 && mouseY <= 305) {
+    focusNome = false;
+    focusVolume = true;
+    return;
   }
+
 
   // scroll vertical
   if (scrollUpButtonEdit.isMouseOver()) {
@@ -217,18 +252,28 @@ void mousePressedTelaEditaPontos() {
     // limpa flags originais **apenas agora**
     for (Ponto p : listaPontosColeta)    p.selected = false;
     for (Ponto p : listaPontosDispensa) p.selected = false;
-    // volta
-    telaEditaPontos = false;
-    telaPipetagem   = true;
+    // Limpa somente a seleção local e campos, não troca de tela
+    editSelectedIndex = -1;
+    inputNomeEdit     = "";
+    inputVolumeEdit   = "";
+    assocIndex        = 0;
+    focusNome         = false;
+    focusVolume       = false;
     return;
   }
 
   // CANCELAR
   if (buttonCancelarEdit.isMouseOver()) {
-    telaEditaPontos = false;
-    telaPipetagem   = true;
+    // Limpa somente a seleção local e campos, não troca de tela
+    editSelectedIndex = -1;
+    inputNomeEdit     = "";
+    inputVolumeEdit   = "";
+    assocIndex        = 0;
+    focusNome         = false;
+    focusVolume       = false;
     return;
   }
+
 
   // VOLTAR
   if (backButton.isMouseOver()) {
@@ -259,24 +304,5 @@ void mouseReleasedTelaEditaPontos() {
   if (scrollRightButtonEdit.isPressed) {
     assocIndex++;
     scrollRightButtonEdit.isPressed=false;
-  }
-}
-
-// ---------------------------------
-// Captura de teclado
-// ---------------------------------
-void keyTyped() {
-  if (!telaEditaPontos) return;
-  if (focusNome) {
-    if (key==BACKSPACE && inputNomeEdit.length()>0)
-      inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length()-1);
-    else if (key>=' ' && key<='~')
-      inputNomeEdit += key;
-  }
-  else if (focusVolume) {
-    if (key==BACKSPACE && inputVolumeEdit.length()>0)
-      inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length()-1);
-    else if (key>='0' && key<='9')
-      inputVolumeEdit += key;
   }
 }

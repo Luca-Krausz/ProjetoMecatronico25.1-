@@ -645,7 +645,7 @@ String gerarStringFormatoFinal() {
   }
 
   sb.append("]"); // Add the closing bracket
-
+  
   return sb.toString(); // Return the final formatted string
 
 }

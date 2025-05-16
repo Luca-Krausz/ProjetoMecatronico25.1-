@@ -219,7 +219,7 @@ void mouseReleasedTelaPontosColeta() {
         if (segments[i].contains(mouseX, mouseY) && !xyLocked) { 
           switch (i) {
             case 0: // Up
-              command = "+X" + String.valueOf(movSpeed + "\r");
+              command = "+X" + String.valueOf(movSpeed + "\r");          
               coordenadas[0] += movSpeed;
               coordenadas[0] = constrain(coordenadas[0], minX, maxX); 
               if (porta != null) {

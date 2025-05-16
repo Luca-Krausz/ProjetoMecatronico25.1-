@@ -142,13 +142,14 @@ void mouseReleasedPipetagem() {
      pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
      
-     if (porta != null){
-       gerarListaFormatoFinal();
-       porta.write(gerarStringFormatoFinal());
-     }
-     else {
-       println("porta inválida"); 
-     }
+  // Codigo para compreender se as coletas e dispensas estao associadas corretamente
+    String comando = gerarStringColetasDispensas();
+    println(comando);         // Exibe no console do Processing
+    if (porta != null) {
+        porta.write(comando);  // Envia via UART/I2C para as placas Nucleo
+    } else {
+        println("Erro: porta serial não inicializada");
+    }
   }
   
   else if(pausaPip.isPressed){
@@ -171,7 +172,6 @@ void mouseReleasedPipetagem() {
     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);     
-    //println("Parar pipetadora");
   }
   
 }
