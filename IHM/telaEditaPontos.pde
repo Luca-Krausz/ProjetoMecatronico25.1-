@@ -14,6 +14,7 @@ ArrayList<Ponto> listaAssociadas = new ArrayList<Ponto>();
 int assocIndex = 0;
 int  editScrollOffset = 0;
 final int maxVisibleEdit = 10;
+boolean uiColetaHighlight = false; // auxilio visual para o feedback do clique do usuario na coleta
 
 
 // ------------------------
@@ -90,6 +91,7 @@ void backspaceChar() {
 void setupTelaEditaPontos() {
   // Copia seleção que veio da tela anterior
   listaEditavel.clear();
+  uiColetaHighlight = false;
   if (edicaoColetaEdit) {
     for (Ponto p : listaPontosColeta)
       if (p.selected) listaEditavel.add(p);
@@ -157,7 +159,9 @@ void desenhaTelaEditaPontos() {
   rect(600, 170, 400, 35, 10);
   rect(600, 270, 400, 35, 10);
   noStroke();
-  fill(azulEscuro); textSize(16); textAlign(LEFT, CENTER);
+  fill(azulEscuro); 
+  textSize(16); 
+  textAlign(LEFT, CENTER);
 
   // Nomes com cursor piscante
   String nomeVis = inputNomeEdit;
@@ -218,13 +222,15 @@ void desenhaTelaEditaPontos() {
   if (edicaoColetaEdit && editSelectedIndex>=0) {
     Ponto sel = listaEditavel.get(editSelectedIndex);
     for (Ponto d : listaPontosDispensa)
-      if (coordsIguais(d.coordsColeta, sel.coords)) listaAssociadas.add(d);
+      if (coordsIguais(d.coordsColeta, sel.coords)) 
+        listaAssociadas.add(d);
   } else if (!edicaoColetaEdit) {
     listaAssociadas.addAll(listaPontosColeta);
   }
 
   textSize(14); 
   textAlign(LEFT, CENTER);
+  
   if (listaAssociadas.isEmpty()) {
     fill(cinzaClaro);
     if (edicaoColetaEdit) text("Nenhuma dispensa associada", dx+85, dy+dh/2);
@@ -232,7 +238,26 @@ void desenhaTelaEditaPontos() {
   } 
   else {
     assocIndex = constrain(assocIndex, 0, listaAssociadas.size()-1);
-    fill(azulEscuro);
+    
+    if (!edicaoColetaEdit && editSelectedIndex >= 0) {
+      Ponto selDisp = listaEditavel.get(editSelectedIndex);
+      Ponto currColeta = listaAssociadas.get(assocIndex);
+      if (coordsIguais(currColeta.coords, selDisp.coordsColeta) || uiColetaHighlight) {
+        fill(azulEscuro);
+      }
+      else {
+        fill(cinzaClaro);
+      }
+    } 
+    
+    else if (!edicaoColetaEdit){
+      fill(cinzaClaro);
+    }
+    
+    else{
+      fill(azulEscuro);
+    }
+    
     rect(((2*dx+dw)/2)-((textWidth(listaAssociadas.get(assocIndex).nome)+ 50)/2), dy + 5, textWidth(listaAssociadas.get(assocIndex).nome)+ 50, dh - 10, 10);
     
     fill(branco);
@@ -282,9 +307,6 @@ void mousePressedTelaEditaPontos() {
   // ao clicar fora, fecha o teclado
   focusNome = focusVolume = false;
 
-  
-
-
 
   // scroll vertical
   if (scrollUpButtonEdit.isMouseOver()) {
@@ -306,6 +328,7 @@ void mousePressedTelaEditaPontos() {
       inputNomeEdit   = s.nome;
       inputVolumeEdit = str(s.volume);
       assocIndex      = 0;
+      uiColetaHighlight = false;
       return;
     }
   }
@@ -317,6 +340,19 @@ void mousePressedTelaEditaPontos() {
   if (scrollRightButtonEdit.isMouseOver()) {
     scrollRightButtonEdit.isPressed=true; return;
   }
+  
+  if (!edicaoColetaEdit && editSelectedIndex >= 0 && !listaAssociadas.isEmpty()) {
+    float dx=width-420, dy=380, dw=380, dh=80;
+    float w = textWidth(listaAssociadas.get(assocIndex).nome) + 50;
+    float h = dh - 10;
+    float x = ((2*dx+dw)/2) - (w/2);
+    float y = dy + 5;
+    if (mouseX >= x && mouseX <= x + w &&
+        mouseY >= y && mouseY <= y + h) {
+      uiColetaHighlight = !uiColetaHighlight;
+      return;
+  }
+}
 
   // SALVAR
   if (buttonSalvarEdit.isMouseOver() && editSelectedIndex>=0) {
@@ -337,6 +373,7 @@ void mousePressedTelaEditaPontos() {
     assocIndex        = 0;
     focusNome         = false;
     focusVolume       = false;
+    uiColetaHighlight = false;
     
     return;
   }

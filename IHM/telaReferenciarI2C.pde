@@ -7,7 +7,7 @@ Button botao_continuar_ref;
 
 void setupRefI2C(){
  
-  botao_continuar_ref = new Button(true, 337, 280, 350, 50, "Continuar com referenciamento", azulClaro, branco);
+  botao_continuar_ref = new Button(true, 337, 280, 350, 50, "Iniciar o referenciamento", azulEscuro, branco);
 }
 
 void desenhaRefI2C() {
@@ -30,7 +30,7 @@ void desenhaRefI2C() {
   textSize(24);
   fill(azulEscuro);
   textAlign(CENTER, CENTER);
-  text("Certifique-se de que nenhum\nobjeto possa colidir com a pipeta",
+  text("Certifique-se de que nenhum\nobjeto possa colidir com a pipeta!",
        caixaX + 800 / 2, 230);
 
   // Botão "Continuar com referenciamento"

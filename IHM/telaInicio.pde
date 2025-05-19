@@ -1,5 +1,5 @@
    // UI elements
-Button  botao_tutorial, modo_manual, modo_automatico, modo_hist;
+Button  botao_tutorial, modo_manual, modo_hist;
 
  // Definindo as características dos botões de "modo"
 
@@ -9,9 +9,8 @@ void setupTelaInicio() {
    }
    
    botao_tutorial =  new Button(true, 80, 350, 120, 40, "Tutorial", brancoBege, azulEscuro);    // (square?, x, y, w, h, label, bgColor, textcolor)
-   modo_manual =     new Button(true, 692, 250, 200, 40, "Manual", azulEscuro, branco);         // (square?, x, y, w, h, label, bgColor, textcolor)
-   modo_automatico = new Button(true, 692, 305, 200, 40, "Automático", azulEscuro, branco);     // (square?, x, y, w, h, label, bgColor, textcolor)
-   modo_hist =       new Button(true, 692, 360, 200, 40, "Histórico", azulEscuro, branco);      // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_manual =     new Button(true, 670, 250, 250, 55, "Manual", azulEscuro, branco);         // (square?, x, y, w, h, label, bgColor, textcolor)
+   modo_hist =       new Button(true, 670, 320, 250, 55, "Histórico", azulEscuro, branco);      // (square?, x, y, w, h, label, bgColor, textcolor)
   
 }
 
@@ -39,7 +38,7 @@ void desenhaTelaInicio() {
   rect(560, 0, 464, janelaAltura);
 
   // Title on the right side
-  textSize(28);
+  textSize(30);
   fill(azulEscuro);
   textAlign(CENTER, TOP);
   text("Escolha o modo\nde operação", 560 + 464/2, 150);
@@ -47,7 +46,6 @@ void desenhaTelaInicio() {
   // Draw the buttons
   botao_tutorial.draw();
   modo_manual.draw();
-  modo_automatico.draw();
   modo_hist.draw();
 
 }
@@ -65,12 +63,6 @@ void mousePressedInicio() {
   // Manual
   else if (modo_manual.isMouseOver()) {
     modo_manual.isPressed = true;
-    
-  }
-
-  // Automático
-  else if (modo_automatico.isMouseOver()) {
-    modo_automatico.isPressed = true;
     
   }
 
@@ -98,12 +90,6 @@ void mouseReleasedInicio() {
     setupReferenciar();
     telaInicio      = false;
     telaReferenciar = true; 
-  }
-  
-  else if (modo_automatico.isPressed) {
-    modo_automatico.isPressed = false; 
-    
-    println("Botão AUTOMÁTICO clicado!");
   }
   
   else if(modo_hist.isPressed) {

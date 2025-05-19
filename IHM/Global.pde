@@ -56,6 +56,7 @@ int[] coordenadas = {0, 0, 0};         // X, Y, Z coordinates
 int[] coordenadasColeta = {0, 0, 0};    // X, Y, Z coordinates for Collecting Points
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 String command = "";
+boolean canStart;    // Vendo se pode inciar a pipetagem ou não
 
 boolean coordsIguais(int[] a, int[] b) {
   return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];

@@ -10,10 +10,6 @@ void setupTelaPipetagem() {
   //color corMaisPonto = (pipetagemAtiva) ? cinzaMedio : azulClaro;
   AddColeta = new Button(true, 80, 250, 140, 110, "+ Ponto de \ncoleta", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   AddDispensa = new Button(true, 370, 390, 140, 110, "+ Ponto de \ndispensa", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-
-  
-  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  desenhaTriangulo(870, 440, 40, branco);
   
   pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
@@ -38,7 +34,11 @@ void desenhaTelaPipetagem() {
   if (logo != null) {
     image(logo, width - logo.width - 900, -40);
   }
-    backButton.draw();
+  
+  backButton.draw();
+  
+  canStart = listaPontosColeta.size() > 0 && listaPontosDispensa.size() > 0; // Vendo se pode iniciar pipetagem
+  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", canStart ? azulEscuro : cinzaEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
 
   // Título
   fill(0);
@@ -52,6 +52,7 @@ void desenhaTelaPipetagem() {
   text("Modo atual:", 80, 200);
   fill(0);
   text("manual", 180, 200);
+
 
   // Desenha botao
   AddColeta.draw();
@@ -69,18 +70,18 @@ void desenhaTelaPipetagem() {
 
   // Caixa para tempo restante
   fill(branco);
-  stroke(azulEscuro);
+  stroke(canStart ? azulEscuro : cinzaEscuro);
   strokeWeight(3);
   rect(600, 280, 350, 80, 20);
   noStroke();
 
-  fill(azulEscuro);
+  fill(canStart ? azulEscuro : cinzaEscuro);
   textSize(fontSubtitulo + 5);
   text("Tempo restante \npara pipetagem", 700, 320);
 
   fill(azulEscuro);
   textSize(fontSubtitulo);
-  text(tempoRestante + " s", 900, 320);
+  text(canStart ? tempoRestante + " s" : "-", 900, 320);
 
 }
 
@@ -102,7 +103,7 @@ void mousePressedPipetagem() {
     AddDispensa.isPressed = true;
     return;
   }
-  else if (iniciaPip.isMouseOver()) {
+  else if (iniciaPip.isMouseOver() && canStart) {
     iniciaPip.isPressed = true;
     return;
   }
@@ -212,8 +213,6 @@ void pararPipetagem() {
   println("Função pararPipetagem() executada.");
 }
 
-
-// For convenience, an example "desenhaSecaoPontos()" from your code:
 void desenhaSecaoPontos(float x, float y, String titulo, int quantidade) {
   fill(brancoBege);
   rect(x, y, 250, 110, 12);
@@ -228,11 +227,4 @@ void desenhaSecaoPontos(float x, float y, String titulo, int quantidade) {
   textAlign(CENTER, CENTER);
   textSize(20);
   text(quantidade, x + 220, y + 50);
-}
-
-// And a small helper for the triangle (the "play" icon):
-void desenhaTriangulo(float x, float y, float tamanho, color cor) {
-  fill(cor);
-  noStroke();
-  triangle(x, y - tamanho/2, x, y + tamanho/2, x + tamanho, y);
 }

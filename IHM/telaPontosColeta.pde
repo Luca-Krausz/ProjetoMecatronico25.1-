@@ -232,7 +232,7 @@ void mouseReleasedTelaPontosColeta() {
               }
               break;
             case 1: // Right 
-              command = "+Y" + String.valueOf(movSpeed) + "\r";
+              command = "-Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] -= movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY); 
               if (porta != null) {
@@ -254,7 +254,7 @@ void mouseReleasedTelaPontosColeta() {
               }
               break;
             case 3: // Left
-              command = "-Y" + String.valueOf(movSpeed) + "\r";
+              command = "+Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] += movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY);
               if (porta != null) {
@@ -290,7 +290,7 @@ void mouseReleasedTelaPontosColeta() {
     z_plus.isPressed = false; // Reset state first
 
     if (!zLocked){
-      command = "+Z" + String.valueOf(movSpeed) + "\r";
+      command = "-Z" + String.valueOf(movSpeed) + "\r";
       if (porta != null) {
         porta.write(command);
      }
@@ -305,7 +305,7 @@ void mouseReleasedTelaPontosColeta() {
    z_minus.isPressed = false; // Reset state first
 
    if (!zLocked){
-     command = "-Z" + String.valueOf(movSpeed) + "\r";
+     command = "+Z" + String.valueOf(movSpeed) + "\r";
      if (porta != null) {
         porta.write(command);
      }
