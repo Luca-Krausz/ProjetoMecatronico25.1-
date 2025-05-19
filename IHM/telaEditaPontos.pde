@@ -15,22 +15,72 @@ int assocIndex = 0;
 int  editScrollOffset = 0;
 final int maxVisibleEdit = 10;
 
-// ---------------------------------
-// Captura de teclado 
-// ---------------------------------
-void keyTyped() {
-  if (!telaEditaPontos) return;
-  if (focusNome) {
-    if (key == BACKSPACE && inputNomeEdit.length() > 0)
-      inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length()-1);
-    else if (key >= ' ' && key <= '~')
-      inputNomeEdit += key;
-  } else if (focusVolume) {
-    if (key == BACKSPACE && inputVolumeEdit.length() > 0)
-      inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length()-1);
-    else if (key >= '0' && key <= '9')
-      inputVolumeEdit += key;
+
+// ------------------------
+// On-screen keyboard embutido
+// ------------------------
+boolean keyboardVisible = false;
+String[][] keyRows = {
+  { "1","2","3","4","5","6","7","8","9","0" },
+  { "Q","W","E","R","T","Y","U","I","O","P" },
+  { "A","S","D","F","G","H","J","K","L" },
+  { "Z","X","C","V","B","N","M","←" },
+  { "Espaço","OK" }
+};
+
+void drawKeyboard() {
+  float kx = 100, ky = height - 250;
+  float kw = width - 200, kh = 200;
+  float rowH = kh / keyRows.length;
+  textSize(18);
+  for (int r = 0; r < keyRows.length; r++) {
+    String[] row = keyRows[r];
+    float cellW = kw / row.length;
+    for (int c = 0; c < row.length; c++) {
+      float x = kx + c*cellW, y = ky + r*rowH;
+      fill(cinzaClaro);
+      rect(x, y, cellW-5, rowH-5, 5);
+      fill(0);
+      textAlign(CENTER, CENTER);
+      text(row[c], x + (cellW-5)/2, y + (rowH-5)/2);
+    }
   }
+}
+
+void handleKeyboardClick() {
+  float kx = 100, ky = height - 250;
+  float kw = width - 200, kh = 200;
+  float rowH = kh / keyRows.length;
+  for (int r = 0; r < keyRows.length; r++) {
+    String[] row = keyRows[r];
+    float cellW = kw / row.length;
+    for (int c = 0; c < row.length; c++) {
+      float x = kx + c*cellW, y = ky + r*rowH;
+      if (mouseX >= x && mouseX <= x+cellW-5 &&
+          mouseY >= y && mouseY <= y+rowH-5) {
+        String k = row[c];
+        if      (k.equals("OK"))       { keyboardVisible = false; }
+        else if (k.equals("Espaço"))   { appendChar(' ');      }
+        else if (k.equals("←"))        { backspaceChar();      }
+        else                           { appendChar(k.charAt(0)); }
+        return;
+      }
+    }
+  }
+}
+
+void appendChar(char ch) {
+  if (focusNome)           inputNomeEdit   += ch;
+  else if (focusVolume) {
+    if (Character.isDigit(ch)) inputVolumeEdit += ch;
+  }
+}
+
+void backspaceChar() {
+  if (focusNome && inputNomeEdit.length() > 0)
+    inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length()-1);
+  else if (focusVolume && inputVolumeEdit.length() > 0)
+    inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length()-1);
 }
 
 
@@ -102,13 +152,21 @@ void desenhaTelaEditaPontos() {
   else                  text("Ponto de coleta correspondente:", 600, 360);
 
   // Caixa de texto
-  fill(branco); stroke(azulEscuro);
+  fill(branco); 
+  stroke(azulEscuro);
   rect(600, 170, 400, 35, 10);
   rect(600, 270, 400, 35, 10);
   noStroke();
   fill(azulEscuro); textSize(16); textAlign(LEFT, CENTER);
-  text(inputNomeEdit,   610, 170+35/2);
-  text(inputVolumeEdit, 610, 270+35/2);
+
+  // Nomes com cursor piscante
+  String nomeVis = inputNomeEdit;
+  String volVis  = inputVolumeEdit;
+  if (focusNome && (frameCount/30 % 2) == 0)    nomeVis += "|";
+  if (focusVolume && (frameCount/30 % 2) == 0)  volVis  += "|";
+  
+  text(nomeVis, 610, 170+35/2);
+  text(volVis,  610, 270+35/2);
 
   // — Painel lateral —
   float px=width-950, py=70, pw=380, ph=height-150;
@@ -122,7 +180,7 @@ void desenhaTelaEditaPontos() {
   scrollDownButtonEdit.draw();
 
   // Lista de pontos
-  textSize(16);
+  textSize(18);
   float itemY=py+70, itemH=35;
   int start = editScrollOffset;
   int end   = min(listaEditavel.size(), start + maxVisibleEdit);
@@ -140,17 +198,20 @@ void desenhaTelaEditaPontos() {
     }
 
     // Pontos
-    fill(azulEscuro); textAlign(LEFT, CENTER);
+    fill(azulEscuro); 
+    textAlign(LEFT, CENTER);
     text(p.nome, px+40, y);
   }
   if (listaEditavel.isEmpty()) {
-    fill(cinzaClaro); textSize(14);
+    fill(cinzaClaro); 
+    textSize(14);
     text("Nenhum selecionado", px+80, py+70);
   }
 
   // Painel inferior (Associações)
   float dx=width-420, dy=380, dw=380, dh=80;
-  fill(brancoBege); rect(dx, dy, dw, dh, 8);
+  fill(brancoBege); 
+  rect(dx, dy, dw, dh, 8);
 
   // monta listaAssociadas
   listaAssociadas.clear();
@@ -162,7 +223,8 @@ void desenhaTelaEditaPontos() {
     listaAssociadas.addAll(listaPontosColeta);
   }
 
-  textSize(14); textAlign(LEFT, CENTER);
+  textSize(14); 
+  textAlign(LEFT, CENTER);
   if (listaAssociadas.isEmpty()) {
     fill(cinzaClaro);
     if (edicaoColetaEdit) text("Nenhuma dispensa associada", dx+85, dy+dh/2);
@@ -185,6 +247,12 @@ void desenhaTelaEditaPontos() {
   buttonSalvarEdit.draw();
   buttonCancelarEdit.draw();
   backButton.draw();
+  
+    // desenha por cima o teclado virtual, se estiver ativo
+  if (keyboardVisible) {
+    drawKeyboard();
+  }
+
 }
 
 // ---------------------------------
@@ -195,17 +263,27 @@ void mousePressedTelaEditaPontos() {
   float px=width-950, py=70;
   float itemY=py+70, itemH=35;
 
-  // Foco nos campos de texto
+  // foco nos inputs → abre nosso teclado embutido
   if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 170 && mouseY <= 205) {
-    focusNome = true;
-    focusVolume = false;
+    focusNome = true; focusVolume = false;
+    keyboardVisible = true;
     return;
   }
   if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 270 && mouseY <= 305) {
-    focusNome = false;
-    focusVolume = true;
+    focusNome = false; focusVolume = true;
+    keyboardVisible = true;
     return;
   }
+  // se o teclado está visível, trata apenas ele
+  if (keyboardVisible) {
+    handleKeyboardClick();
+    return;
+  }
+  // ao clicar fora, fecha o teclado
+  focusNome = focusVolume = false;
+
+  
+
 
 
   // scroll vertical

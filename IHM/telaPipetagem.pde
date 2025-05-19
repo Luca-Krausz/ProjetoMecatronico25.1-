@@ -8,8 +8,9 @@ Button AddColeta, AddDispensa, iniciaPip, pausaPip, pararPip;
 void setupTelaPipetagem() {
   // "+ Ponto de coleta"
   //color corMaisPonto = (pipetagemAtiva) ? cinzaMedio : azulClaro;
-  AddColeta = new Button(true, 80, 260, 140, 80, "+ Ponto de \ncoleta", azulClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  AddDispensa = new Button(true, 370, 350, 140, 80, "+ Ponto de \ndispensa", azulClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  AddColeta = new Button(true, 80, 250, 140, 110, "+ Ponto de \ncoleta", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  AddDispensa = new Button(true, 370, 390, 140, 110, "+ Ponto de \ndispensa", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+
   
   iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   desenhaTriangulo(870, 440, 40, branco);
@@ -59,11 +60,12 @@ void desenhaTelaPipetagem() {
   pausaPip.draw();
   pararPip.draw();
 
+
   // Seção total de coleta
-  desenhaSecaoPontos(250, 260, "Pontos totais de \ncoleta", pontosColeta);
+  desenhaSecaoPontos(250, 250, "Pontos totais de \ncoleta", listaPontosColeta.size());
 
   // "+ Ponto de dispensa"
-  desenhaSecaoPontos(80, 350, "Pontos totais de \ndispensa", pontosDispensa);
+  desenhaSecaoPontos(80, 390, "Pontos totais de \ndispensa",  listaPontosDispensa.size());
 
   // Caixa para tempo restante
   fill(branco);
@@ -210,21 +212,22 @@ void pararPipetagem() {
   println("Função pararPipetagem() executada.");
 }
 
+
 // For convenience, an example "desenhaSecaoPontos()" from your code:
 void desenhaSecaoPontos(float x, float y, String titulo, int quantidade) {
   fill(brancoBege);
-  rect(x, y, 260, 80, 12);
+  rect(x, y, 250, 110, 12);
   fill(cinzaEscuro);
   textSize(20);
   textAlign(LEFT, CENTER);
-  text(titulo, x + 15, y + 40);
+  text(titulo, x + 15, y + 50);
 
-  fill(azulClaro);
-  ellipse(x + 220, y + 40, 40, 40);
+  fill(azulEscuro);
+  ellipse(x + 220, y + 50, 40, 40);
   fill(branco);
   textAlign(CENTER, CENTER);
   textSize(20);
-  text(quantidade, x + 220, y + 40);
+  text(quantidade, x + 220, y + 50);
 }
 
 // And a small helper for the triangle (the "play" icon):

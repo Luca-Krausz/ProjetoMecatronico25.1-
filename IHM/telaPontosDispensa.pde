@@ -96,7 +96,7 @@ void desenhaTelaPontosDispensa() {
   rect(width - 340, 250, 300, height - 400, 8);
 
   fill(azulEscuro);
-  textSize(18);
+  textSize(20);
   textAlign(LEFT, CENTER);
   text("Pontos para Dispensa", width - 310, 235);
   
@@ -106,7 +106,7 @@ void desenhaTelaPontosDispensa() {
   rect(width - 340, 70, 300, 140, 8); 
   
   fill(azulEscuro);
-  textSize(18);
+  textSize(20);
   textAlign(LEFT, CENTER);
   text("Coletas disponíveis:", width - 310, 55);
   
@@ -267,7 +267,7 @@ void mousePressedTelaMovimentacaoManual() {
   int endIndex = min(pontosFiltrados.size(), scrollOffset + maxVisiblePoints);
   for (int i = scrollOffset; i < endIndex; i++) {
     int y = startY + (i - scrollOffset)*itemH;
-    if (mouseX >= width - 320 && mouseX <= width - 300 &&
+    if (mouseX >= width - 330 && mouseX <= width - 310 &&
         mouseY >= y - 10 && mouseY <= y + 10) {
       pontosFiltrados.get(i).selected = !pontosFiltrados.get(i).selected;
       return;

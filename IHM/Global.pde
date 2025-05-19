@@ -193,7 +193,7 @@ void setup() {
 
   // UART Comms
   //println("Portas disponíveis:" + Serial.list());
-  porta = new Serial(this, "/dev/ttyAMA0", 9600);
+  //porta = new Serial(this, "/dev/ttyAMA0", 9600);
   //porta = new Serial(this, "COM4", 9600);
 
   noStroke();
@@ -621,7 +621,7 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
   int checkboxMargin = 10;
 
   fill(azulEscuro);
-  textSize(14);
+  textSize(18);
   textAlign(LEFT, CENTER);
 
   // Determine visible range
