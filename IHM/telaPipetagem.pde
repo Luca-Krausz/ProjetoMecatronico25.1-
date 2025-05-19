@@ -6,10 +6,11 @@
 Button AddColeta, AddDispensa, iniciaPip, pausaPip, pararPip;
 
 void setupTelaPipetagem() {
-  // "+ Ponto de coleta"
-  //color corMaisPonto = (pipetagemAtiva) ? cinzaMedio : azulClaro;
+
   AddColeta = new Button(true, 80, 250, 140, 110, "+ Ponto de \ncoleta", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   AddDispensa = new Button(true, 370, 390, 140, 110, "+ Ponto de \ndispensa", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  
+  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", canStart ? azulEscuro : cinzaEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
   pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
@@ -38,7 +39,7 @@ void desenhaTelaPipetagem() {
   backButton.draw();
   
   canStart = listaPontosColeta.size() > 0 && listaPontosDispensa.size() > 0; // Vendo se pode iniciar pipetagem
-  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", canStart ? azulEscuro : cinzaEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  iniciaPip.bgColor = canStart && !pipetagemAtiva? azulEscuro : cinzaEscuro;
 
   // Título
   fill(0);
@@ -134,8 +135,7 @@ void mouseReleasedPipetagem() {
   
   if (AddColeta.isPressed) {
     AddColeta.isPressed = false;
-    
-    // Mudança de telas
+  
     setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
     telaPipetagem = false;
     telaPontosColeta = true;
@@ -153,6 +153,7 @@ void mouseReleasedPipetagem() {
   else if(iniciaPip.isPressed) {
      pipetagemAtiva = true;
      pipetagemPausada = false;
+     
      
      pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
      pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
