@@ -57,6 +57,10 @@ int[] coordenadasColeta = {0, 0, 0};    // X, Y, Z coordinates for Collecting Po
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 String command = "";
 
+boolean coordsIguais(int[] a, int[] b) {
+  return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+} // Conferencia caso haja pontos de coleta duplicados
+
 // Booleans for buttons:
 boolean scrollingUp    = false;
 boolean scrollingDowm  = false;
@@ -66,11 +70,7 @@ int selectedPoint      = -1;
 int pontoColetaSelecionadoIndex = -1;
 int currentColetaIndex = 0;
 boolean edicaoColetaEdit = false;
-boolean coordsIguais(int[] a, int[] b) {
-  return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
-} // Conferencia caso haja pontos de coleta duplicados
-
-
+boolean pipetagemRef = false;
 
 // For the scroll arrow buttons 
 boolean hasItemsAbove = false;
@@ -94,6 +94,9 @@ ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
 
+// Lista de Ponto(s) que foram marcados para edição na tela de edição
+ArrayList<Ponto> pontosEmEdicao = new ArrayList<Ponto>();
+
 
 // Images / Shapes
 PImage homeXY, homeZ, logo, trash, editpen, addicon, backIcon;
@@ -112,7 +115,7 @@ String mensagemErroColeta = "";
 // Porta UART com Raspberry
 Serial porta;
 
-// Gera string agrupando dispensas por coleta:
+// Gera string agrupando dispensas por coleta (Uso para debug e ver se as coletas tao relacionando as dispensas corretas):
 String gerarStringColetasDispensas() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < listaPontosColeta.size(); i++) {
@@ -189,7 +192,8 @@ void setup() {
   botao_direcional(250, 300, 150, 80);
 
   // UART Comms
-  //porta = new Serial(this, "/dev/ttyAMA0", 9600);
+  //println("Portas disponíveis:" + Serial.list());
+  porta = new Serial(this, "/dev/ttyAMA0", 9600);
   //porta = new Serial(this, "COM4", 9600);
 
   noStroke();
@@ -297,9 +301,6 @@ void mouseReleased() {
 //----------------------------------------------------------------------------------------
 //                                      FUNÇÕES GLOBAIS 
 //----------------------------------------------------------------------------------------
-
-
-
 // 1. Simple button
 void desenhaBotao(float x, float y, float w, float h,
                   String rotulo, color corFundo, color corTexto) {

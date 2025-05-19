@@ -16,6 +16,8 @@ void desenhaRefI2C() {
   if (logo != null) {
     image(logo, width - logo.width - 900, -40);
   }
+  
+  pipetagemRef = true; // para conferir se esta vindo do referenciamento ou de outra tela
 
   // Caixa de mensagem
   float caixaX    = (width - 800)/2;

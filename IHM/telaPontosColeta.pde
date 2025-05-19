@@ -23,6 +23,8 @@ void setupTelaPontosColeta() {
 void desenhaTelaPontosColeta() {
   background(branco); // Clear background
   
+  pipetagemRef = false; // para conferir se esta vindo do referenciamento ou de outra tela
+  
   if (logo != null) {
     image(logo, width - logo.width - 900, -40);
   }
@@ -195,7 +197,6 @@ void mousePressedTelaPontosColeta() {
     return;
   }
 
-  // If no UI element was pressed, potentially handle background press?
 }
 
 

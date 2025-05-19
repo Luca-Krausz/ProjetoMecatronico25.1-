@@ -259,6 +259,7 @@ void mousePressedTelaEditaPontos() {
     assocIndex        = 0;
     focusNome         = false;
     focusVolume       = false;
+    
     return;
   }
 

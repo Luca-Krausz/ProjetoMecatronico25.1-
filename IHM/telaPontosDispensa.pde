@@ -61,6 +61,8 @@ void setupTelaPontosDispensa() {
 void desenhaTelaPontosDispensa() {
   background(branco);
   
+  pipetagemRef = false; // para conferir se esta vindo do referenciamento ou de outra tela
+  
   if (logo != null) {
     image(logo, width - logo.width - 900, -40);
   }
@@ -334,7 +336,7 @@ void mousePressedTelaMovimentacaoManual() {
     } else {
       // Novo ponto selecionado
       pontoColetaSelecionadoIndex = currentColetaIndex;
-      println("Ponto de Coleta Selecionado: " + pontoColeta.nome);
+      println("Ponto de Coleta Selecionado: " + pontoColeta.nome + " [" +pontoColeta.coords[0], ","+ pontoColeta.coords[1] + ","+ pontoColeta.coords[2] + "]");
     }
     return;
   }

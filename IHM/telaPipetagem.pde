@@ -17,6 +17,19 @@ void setupTelaPipetagem() {
   pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
+    if (pipetagemRef) {
+    listaPontosColeta.clear();
+    pontosColeta = 0;
+    listaPontosDispensa.clear();
+    pontosDispensa = 0;
+    scrollOffset       = 0;
+    scrollOffsetColeta = 0;
+    selectedPoint      = -1;
+    pontoColetaSelecionadoIndex = -1;
+    currentColetaIndex = 0;
+    pipetagemRef = false;
+  }
+  
 }
 
 
@@ -143,10 +156,11 @@ void mouseReleasedPipetagem() {
      iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
      
   // Codigo para compreender se as coletas e dispensas estao associadas corretamente
-    String comando = gerarStringColetasDispensas();
+    String comando = gerarStringFormatoFinal();
     println(comando);         // Exibe no console do Processing
     if (porta != null) {
         porta.write(comando);  // Envia via UART/I2C para as placas Nucleo
+        println(comando);
     } else {
         println("Erro: porta serial não inicializada");
     }

@@ -28,6 +28,8 @@ void desenhaTelaReferenciar() {
 
   fill(brancoBege);
   rect(caixaX, caixaY, caixaLarg, caixaAlt, 16);
+  
+   pipetagemRef = true; // para conferir se esta vindo do referenciamento ou de outra tela
 
   // Texto
   textSize(24);
