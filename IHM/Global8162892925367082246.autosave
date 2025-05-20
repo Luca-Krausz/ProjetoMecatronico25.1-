@@ -34,14 +34,13 @@ boolean telaPontosColeta   = false;
 boolean telaPontosDispensa = false;
 boolean telaReferenciarI2C = false;
 boolean telaEditaPontos = false;
-boolean telaHistorico = false;
-
 boolean pressedPontoColeta = false;
 boolean pressedPontoDispensa = false;
 boolean pressedIniciarPipetagem = false;
 boolean pressedPausa = false;
 boolean pressedParar = false;
 boolean pressedPontosTotaisColeta = false;
+boolean telaHistorico = false;
 
 // Variaveis globais
 int pontosColeta         = 0;
@@ -58,11 +57,6 @@ int[] coordenadas = {0, 0, 0};         // X, Y, Z coordinates
 int[] coordenadasColeta = {0, 0, 0};    // X, Y, Z coordinates for Collecting Points
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 String command = "";
-boolean canStart;    // Vendo se pode inciar a pipetagem ou não
-
-boolean coordsIguais(int[] a, int[] b) {
-  return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
-} // Conferencia caso haja pontos de coleta duplicados
 
 // Booleans for buttons:
 boolean scrollingUp    = false;
@@ -72,8 +66,11 @@ int scrollOffsetColeta       = 0;
 int selectedPoint      = -1;
 int pontoColetaSelecionadoIndex = -1;
 int currentColetaIndex = 0;
-boolean edicaoColetaEdit = false;
-boolean pipetagemRef = false;
+boolean coordsIguais(int[] a, int[] b) {
+  return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+} // Conferencia caso haja pontos de coleta duplicados
+
+
 
 // For the scroll arrow buttons 
 boolean hasItemsAbove = false;
@@ -97,8 +94,6 @@ ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
 
-// Lista de Ponto(s) que foram marcados para edição na tela de edição
-ArrayList<Ponto> pontosEmEdicao = new ArrayList<Ponto>();
 
 
 // Images / Shapes
@@ -117,27 +112,6 @@ String mensagemErroColeta = "";
 
 // Porta UART com Raspberry
 Serial porta;
-
-// Gera string agrupando dispensas por coleta (Uso para debug e ver se as coletas tao relacionando as dispensas corretas):
-String gerarStringColetasDispensas() {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < listaPontosColeta.size(); i++) {
-        Ponto coleta = listaPontosColeta.get(i);
-        sb.append("coleta ").append(i + 1).append(": ");
-        boolean primeiro = true;
-        for (int j = 0; j < listaPontosDispensa.size(); j++) {
-            Ponto disp = listaPontosDispensa.get(j);
-            if (coordsIguais(disp.coordsColeta, coleta.coords)) {
-                if (!primeiro) sb.append(", ");
-                sb.append("dispensa ").append(j + 1);
-                primeiro = false;
-            }
-        }
-        if (i < listaPontosColeta.size() - 1) sb.append("\n");
-    }
-    return sb.toString();
-}
-
 
 
 // ------------------ SETTINGS & SETUP ------------------
@@ -173,6 +147,9 @@ void setup() {
   
   // Back Button
   backButton = new Button(false, width - 30, 35, 40, 40, backIcon, azulEscuro); // (square?, x, y, w, h, icon, bgColor)
+    
+  // Any array initializations
+  //inicializaListaPontosManual();
   
   // Initialize precision selector using the global precisionLabels array
   color[] precisionColors = {verdeBotao, verdeBotao, verdeBotao};
@@ -195,7 +172,6 @@ void setup() {
   botao_direcional(250, 300, 150, 80);
 
   // UART Comms
-  //println("Portas disponíveis:" + Serial.list());
   //porta = new Serial(this, "/dev/ttyAMA0", 9600);
   //porta = new Serial(this, "COM4", 9600);
 
@@ -231,17 +207,15 @@ void draw() {
   }
   else if (telaPontosDispensa) {
     desenhaTelaPontosDispensa();
-    edicaoColetaEdit = false;
   }
   else if (telaPontosColeta) {
     desenhaTelaPontosColeta(); 
-    edicaoColetaEdit = true;
   }
   else if (telaEditaPontos) {
     desenhaTelaEditaPontos(); 
   }
   else if (telaHistorico) {
-   desenhaTelaHistorico(); 
+    desenhaTelaHistorico(); 
   }
   
   else {
@@ -274,7 +248,7 @@ void mousePressed() {
   else if(telaEditaPontos) {
    mousePressedTelaEditaPontos(); 
   }
-  else if (telaHistorico) {
+  else if(telaHistorico){
    mousePressedTelaHistorico(); 
   }
 }
@@ -304,7 +278,8 @@ void mouseReleased() {
   else if(telaEditaPontos){
    mouseReleasedTelaEditaPontos(); 
   }
-  else if (telaHistorico) {
+  
+  else if (telaHistorico){
    mouseReleasedTelaHistorico(); 
   }
 }
@@ -314,6 +289,9 @@ void mouseReleased() {
 //----------------------------------------------------------------------------------------
 //                                      FUNÇÕES GLOBAIS 
 //----------------------------------------------------------------------------------------
+
+
+
 // 1. Simple button
 void desenhaBotao(float x, float y, float w, float h,
                   String rotulo, color corFundo, color corTexto) {
@@ -325,8 +303,20 @@ void desenhaBotao(float x, float y, float w, float h,
   text(rotulo, x + w/2, y + h/2);
 }
 
+//// 2. Initialization for manual points
+//void inicializaListaPontosManual() {
+//  listaPontosManual.clear();
+//  listaPontosManual.add("Ponto 01 - 3ml");
+//  listaPontosManual.add("Ponto 02 - 5ml");
 
-// 2. 'Voltar' round button
+//  listaPontosManualChecked.clear();
+//  listaPontosManualChecked.add(true);
+//  listaPontosManualChecked.add(false);
+//}
+
+
+
+// 3. 'Voltar' round button
 void desenhaBotaoVoltar(float cx, float cy, float diameter) {
   fill(azulEscuro);
   noStroke();
@@ -340,7 +330,7 @@ void desenhaBotaoVoltar(float cx, float cy, float diameter) {
 
 
 
-// 3. Classe "Botao precisao" 
+// 4. Classe "Botao precisao" 
 class SegmentedButton {
   float x, y, w, h;
   String[] labels;
@@ -451,7 +441,7 @@ class SegmentedButton {
 
 
 
-// 4. Classe botao
+// 5. Classe botao
 class Button {
   float x, y, w, h;
   String label;
@@ -588,27 +578,6 @@ class Ponto {
    String coordsColetaToString() {
       return "( " + coordsColeta[0] + ", " + coordsColeta[1] + ", " + coordsColeta[2] + " )";
   }
-
-// 3. Gera string agrupando dispensas por coleta, usando nomes editáveis
-String gerarStringColetasDispensas() {
-  StringBuilder sb = new StringBuilder();
-  for (int i = 0; i < listaPontosColeta.size(); i++) {
-    Ponto coleta = listaPontosColeta.get(i);
-    sb.append(coleta.nome).append(": ");
-    boolean primeiro = true;
-    for (int j = 0; j < listaPontosDispensa.size(); j++) {
-      Ponto disp = listaPontosDispensa.get(j);
-      if (coordsIguais(disp.coordsColeta, coleta.coords)) {
-        if (!primeiro) sb.append(", ");
-        sb.append(disp.nome);
-        primeiro = false;
-      }
-    }
-    if (i < listaPontosColeta.size() - 1) sb.append("\n");
-  }
-  return sb.toString();
-}
-
 }
 
 
@@ -627,6 +596,7 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
     }
     
   int startY = y;
+  //int listW = 200;
   int itemH = 35;
   int listX = width - 340;
   int textMarginLeft = 10;
@@ -634,7 +604,7 @@ void drawPointsList(ArrayList<Ponto> list, int scrollOffset, boolean isColetaScr
   int checkboxMargin = 10;
 
   fill(azulEscuro);
-  textSize(18);
+  textSize(14);
   textAlign(LEFT, CENTER);
 
   // Determine visible range
@@ -802,18 +772,7 @@ void editSelectedPoints(ArrayList<Ponto> list, boolean isColetaScreen, int[] cur
     println("No points selected to edit.");
     return;
   }
-  
-  else {
-    if (!isColetaScreen) {
-      telaPontosDispensa = false;
-      telaEditaPontos = true;
-    }   
-    else {
-    telaPontosColeta = false;
-    telaEditaPontos = true;
-    }
-  }
-  
+
   println("Editing " + pointsToEdit.size() + " selected point(s)...");
 
   for (Ponto point : pointsToEdit) {
@@ -835,6 +794,8 @@ void editSelectedPoints(ArrayList<Ponto> list, boolean isColetaScreen, int[] cur
       }
     }
     println(); // Newline for next point message
+
+    point.selected = false; // Deselect after editing
   }
    println("Edit complete.");
    // Option B: Navigate to a dedicated editing screen would go here instead

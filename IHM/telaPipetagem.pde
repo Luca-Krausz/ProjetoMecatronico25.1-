@@ -26,6 +26,9 @@ void setupTelaPipetagem() {
     pontoColetaSelecionadoIndex = -1;
     currentColetaIndex = 0;
     pipetagemRef = false;
+    coordenadas[0] = 0;
+    coordenadas[1] = 0;
+    coordenadas[2] = 0;
   }
   
 }
@@ -52,7 +55,7 @@ void desenhaTelaPipetagem() {
   fill(cinzaEscuro);
   text("Modo atual:", 80, 200);
   fill(0);
-  text("manual", 180, 200);
+  text("Manual", 180, 200);
 
 
   // Desenha botao

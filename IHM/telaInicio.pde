@@ -96,6 +96,10 @@ void mouseReleasedInicio() {
    modo_hist.isPressed = false;
    
    println("Botão HISTÓRICO clicado!");
+   
+   setupTelaHistorico();
+   telaInicio = false;
+   telaHistorico = true; 
   }
   
   
