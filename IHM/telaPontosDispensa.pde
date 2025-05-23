@@ -383,7 +383,7 @@ void mouseReleasedTelaMovimentacaoManual() {
               }
               break;
             case 1: // Right 
-              command = "+Y" + String.valueOf(movSpeed) + "\r";
+              command = "-Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] -= movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY); 
               if (porta != null) {
@@ -405,7 +405,7 @@ void mouseReleasedTelaMovimentacaoManual() {
               }
               break;
             case 3: // Left
-              command = "-Y" + String.valueOf(movSpeed) + "\r";
+              command = "+Y" + String.valueOf(movSpeed) + "\r";
               coordenadas[1] += movSpeed;
               coordenadas[1] = constrain(coordenadas[1], minY, maxY);
               if (porta != null) {
@@ -538,9 +538,10 @@ if (addButtonDispensa.isPressed) {
    z_home.isPressed = false; // Reset state first
    // Original logic doesn't check isMouseOver on release
    if (!zLocked){
-     command = "ZH\r";
+     command = "ZREF\r\n";
      if (porta != null) {
         porta.write(command);
+        print(command);
      }
      else {
         println("porta inválida"); 
@@ -555,7 +556,7 @@ if (addButtonDispensa.isPressed) {
    xy_home.isPressed = false; // Reset state first
    // Original logic doesn't check isMouseOver on release
    if (!xyLocked){
-     command = "XYH\r";
+     command = "XREF\r";
      if (porta != null) {
         porta.write(command);
      }
@@ -619,35 +620,35 @@ if (addButtonDispensa.isPressed) {
   return listaFinal;
 }
 
-String gerarStringFormatoFinal() {
-  // Get the data in the structured list format first
-  ArrayList<int[]> dataList = gerarListaFormatoFinal();
+//String gerarStringFormatoFinal() {
+//  // Get the data in the structured list format first
+//  ArrayList<int[]> dataList = gerarListaFormatoFinal();
 
-  // Handle the case where the list is empty
-  if (dataList.isEmpty()) {
-    return "PIP []"; // Return empty brackets string
-  }
+//  // Handle the case where the list is empty
+//  if (dataList.isEmpty()) {
+//    return "PIP []"; // Return empty brackets string
+//  }
 
-  // Use StringBuilder for efficient string building
-  StringBuilder sb = new StringBuilder();
-  sb.append("PIP ["); // Start with the opening bracket
+//  // Use StringBuilder for efficient string building
+//  StringBuilder sb = new StringBuilder();
+//  sb.append("PIP ["); // Start with the opening bracket
 
-  // Loop through the list of int arrays
-  for (int i = 0; i < dataList.size(); i++) {
-    int[] item = dataList.get(i); // Get the current inner array
+//  // Loop through the list of int arrays
+//  for (int i = 0; i < dataList.size(); i++) {
+//    int[] item = dataList.get(i); // Get the current inner array
 
-    // If it's not the first item, add a comma separator
-    if (i > 0) {
-      sb.append(",");
-    }
+//    // If it's not the first item, add a comma separator
+//    if (i > 0) {
+//      sb.append(",");
+//    }
 
-    // Append the string representation of the inner array
-    // java.util.Arrays.toString() creates format like "[1, 2, 3]"
-    sb.append(java.util.Arrays.toString(item));
-  }
+//    // Append the string representation of the inner array
+//    // java.util.Arrays.toString() creates format like "[1, 2, 3]"
+//    sb.append(java.util.Arrays.toString(item));
+//  }
 
-  sb.append("]"); // Add the closing bracket
+//  sb.append("]"); // Add the closing bracket
   
-  return sb.toString(); // Return the final formatted string
+//  return sb.toString(); // Return the final formatted string
 
-}
+//}

@@ -33,6 +33,8 @@ void drawKeyboard() {
   float kx = 100, ky = height - 250;
   float kw = width - 200, kh = 200;
   float rowH = kh / keyRows.length;
+  fill(cinzaEscuro);
+  rect(0, height - 270, 1024, 270);
   textSize(18);
   for (int r = 0; r < keyRows.length; r++) {
     String[] row = keyRows[r];

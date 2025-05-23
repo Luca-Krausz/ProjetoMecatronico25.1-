@@ -29,6 +29,8 @@ void setupTelaPipetagem() {
     coordenadas[0] = 0;
     coordenadas[1] = 0;
     coordenadas[2] = 0;
+    canStart = false;
+    
   }
   
 }
@@ -128,6 +130,27 @@ void mousePressedPipetagem() {
 //                           'Mouse released' for tela pipetagem 
 //----------------------------------------------------------------------------------------
 void mouseReleasedPipetagem() {
+  
+    if(iniciaPip.isPressed) {
+     pipetagemAtiva = true;
+     pipetagemPausada = false;
+     
+     
+     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
+     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
+     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
+     
+  // Codigo para compreender se as coletas e dispensas estao associadas corretamente
+    String comando = gerarStringFormatoFinal();
+    //println(comando);         // Exibe no console do Processing
+    if (porta != null) {
+        porta.write("REF\r");
+        porta.write(comando);  // Envia via UART/I2C para as placas Nucleo
+        println(comando);
+    } else {
+        println("Erro: porta serial não inicializada");
+    }
+  }
 
   if (backButton.isPressed && backButton != null){
    backButton.isPressed = false;
@@ -153,25 +176,6 @@ void mouseReleasedPipetagem() {
     telaPontosDispensa = true;
   }
   
-  else if(iniciaPip.isPressed) {
-     pipetagemAtiva = true;
-     pipetagemPausada = false;
-     
-     
-     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
-     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
-     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
-     
-  // Codigo para compreender se as coletas e dispensas estao associadas corretamente
-    String comando = gerarStringFormatoFinal();
-    println(comando);         // Exibe no console do Processing
-    if (porta != null) {
-        porta.write(comando);  // Envia via UART/I2C para as placas Nucleo
-        println(comando);
-    } else {
-        println("Erro: porta serial não inicializada");
-    }
-  }
   
   else if(pausaPip.isPressed){
     pipetagemAtiva = false;

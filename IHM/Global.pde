@@ -58,7 +58,7 @@ int[] coordenadas = {0, 0, 0};         // X, Y, Z coordinates
 int[] coordenadasColeta = {0, 0, 0};    // X, Y, Z coordinates for Collecting Points
 String[] precisionLabels = {"1mm", "10mm", "30mm"};  // Global precision labels
 String command = "";
-boolean canStart;    // Vendo se pode inciar a pipetagem ou não
+boolean canStart;    // Vendo se pode inciar a pipetagem ou nÃ£o
 
 boolean coordsIguais(int[] a, int[] b) {
   return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
@@ -97,7 +97,7 @@ ArrayList<Boolean> listaPontosManualChecked = new ArrayList<Boolean>();
 ArrayList<Ponto> listaPontosDispensa = new ArrayList<Ponto>();
 ArrayList<Ponto> listaPontosColeta = new ArrayList<Ponto>();
 
-// Lista de Ponto(s) que foram marcados para edição na tela de edição
+// Lista de Ponto(s) que foram marcados para ediÃ§Ã£o na tela de ediÃ§Ã£o
 ArrayList<Ponto> pontosEmEdicao = new ArrayList<Ponto>();
 
 
@@ -105,10 +105,10 @@ ArrayList<Ponto> pontosEmEdicao = new ArrayList<Ponto>();
 PImage homeXY, homeZ, logo, trash, editpen, addicon, backIcon;
 
 
-// Botões
+// BotÃµes
 Button backButton, lockXYButton, lockZButton, z_plus, z_minus, z_home, xy_home;
 
-// Botão de Precisão
+// BotÃ£o de PrecisÃ£o
 SegmentedButton precisionSelector;  // Using only the SegmentedButton for precision
 
 // Mensagem de erro ao adicionar dispensa sem coleta ou coleta duplicada
@@ -180,8 +180,8 @@ void setup() {
   precisionSelector.selectedIndex = 0;
 
   // Draw the Buttons for the Z axis
-  z_plus = new Button(true, 500, height - 490, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  z_minus = new Button(true, 500, height - 192, 95, 95, "Z-", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_plus = new Button(true, 500, height - 192, 95, 95, "Z+", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  z_minus = new Button(true, 500, height - 490, 95, 95, "Z-", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   z_home = new Button(true, 500, height - 341, 95, 95, homeZ, azulEscuro); //(square?, x, y, w, h, icon, bgColor)
 
   // Draw the Button for the home XY
@@ -195,8 +195,8 @@ void setup() {
   botao_direcional(250, 300, 150, 80);
 
   // UART Comms
-  //println("Portas disponíveis:" + Serial.list());
-  //porta = new Serial(this, "/dev/ttyAMA0", 9600);
+  //println("Portas disponÃ­veis:" + Serial.list());
+  porta = new Serial(this, "/dev/ttyAMA0", 9600);
   //porta = new Serial(this, "COM4", 9600);
 
   noStroke();
@@ -312,7 +312,7 @@ void mouseReleased() {
 
 
 //----------------------------------------------------------------------------------------
-//                                      FUNÇÕES GLOBAIS 
+//                                      FUNÃ‡Ã•ES GLOBAIS 
 //----------------------------------------------------------------------------------------
 // 1. Simple button
 void desenhaBotao(float x, float y, float w, float h,
@@ -589,7 +589,7 @@ class Ponto {
       return "( " + coordsColeta[0] + ", " + coordsColeta[1] + ", " + coordsColeta[2] + " )";
   }
 
-// 3. Gera string agrupando dispensas por coleta, usando nomes editáveis
+// 3. Gera string agrupando dispensas por coleta, usando nomes editÃ¡veis
 String gerarStringColetasDispensas() {
   StringBuilder sb = new StringBuilder();
   for (int i = 0; i < listaPontosColeta.size(); i++) {
@@ -608,6 +608,39 @@ String gerarStringColetasDispensas() {
   }
   return sb.toString();
 }
+
+}
+
+String gerarStringFormatoFinal() {
+  // Get the data in the structured list format first
+  ArrayList<int[]> dataList = gerarListaFormatoFinal();
+
+  // Handle the case where the list is empty
+  if (dataList.isEmpty()) {
+    return "PIP []"; // Return empty brackets string
+  }
+
+  // Use StringBuilder for efficient string building
+  StringBuilder sb = new StringBuilder();
+  sb.append("PIP ["); // Start with the opening bracket
+
+  // Loop through the list of int arrays
+  for (int i = 0; i < dataList.size(); i++) {
+    int[] item = dataList.get(i); // Get the current inner array
+
+    // If it's not the first item, add a comma separator
+    if (i > 0) {
+      sb.append(",");
+    }
+
+    // Append the string representation of the inner array
+    // java.util.Arrays.toString() creates format like "[1, 2, 3]"
+    sb.append(java.util.Arrays.toString(item));
+  }
+
+  sb.append("]"); // Add the closing bracket
+  
+  return sb.toString(); // Return the final formatted string
 
 }
 

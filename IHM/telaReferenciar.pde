@@ -51,9 +51,7 @@ void mousePressedReferenciar() {
   if (botao_ref.isMouseOver()) {
       botao_ref.isPressed = true;
       return;
-      
-      //telaReferenciar = false;
-      //telaReferenciarI2C   = true;
+
     }
     // Botão "Voltar"
     else if (botao_voltar_ref.isMouseOver()) {

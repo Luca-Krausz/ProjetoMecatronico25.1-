@@ -290,7 +290,7 @@ void mouseReleasedTelaPontosColeta() {
     z_plus.isPressed = false; // Reset state first
 
     if (!zLocked){
-      command = "-Z" + String.valueOf(movSpeed) + "\r";
+      command = "+Z" + String.valueOf(movSpeed) + "\r";
       if (porta != null) {
         porta.write(command);
      }
@@ -305,7 +305,7 @@ void mouseReleasedTelaPontosColeta() {
    z_minus.isPressed = false; // Reset state first
 
    if (!zLocked){
-     command = "+Z" + String.valueOf(movSpeed) + "\r";
+     command = "-Z" + String.valueOf(movSpeed) + "\r";
      if (porta != null) {
         porta.write(command);
      }
@@ -320,7 +320,7 @@ void mouseReleasedTelaPontosColeta() {
    z_home.isPressed = false; // Reset state first
    // Original logic doesn't check isMouseOver on release
    if (!zLocked){
-     command = "ZH\r";
+     command = "ZREF\r\n";
      if (porta != null) {
         porta.write(command);
      }
@@ -335,7 +335,7 @@ void mouseReleasedTelaPontosColeta() {
   if (xy_home.isPressed){
    xy_home.isPressed = false; // Reset state first
    if (!xyLocked){
-     command = "XYH\r";
+     command = "XREF\r\n";
      if (porta != null) {
         porta.write(command);
      }
