@@ -54,7 +54,8 @@ void mouseReleasedRefI2C() {
    botao_continuar_ref.isPressed = false;
    
    if (porta != null){
-     porta.write("REF\r");
+     porta.write("ZREF\r\n");
+     porta.write("XREF\r\n");
    }
    else {
      println("porta inválida");

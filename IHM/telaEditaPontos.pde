@@ -16,22 +16,23 @@ int  editScrollOffset = 0;
 final int maxVisibleEdit = 10;
 boolean uiColetaHighlight = false; // auxilio visual para o feedback do clique do usuario na coleta
 
-
 // ------------------------
 // On-screen keyboard embutido
 // ------------------------
 boolean keyboardVisible = false;
+boolean shiftActive = false; // para alternar entre maiúsculas e minúsculas
+// A tecla de shift agora usa o símbolo de uma seta apontada para cima ("↑")
 String[][] keyRows = {
   { "1","2","3","4","5","6","7","8","9","0" },
-  { "Q","W","E","R","T","Y","U","I","O","P" },
-  { "A","S","D","F","G","H","J","K","L" },
-  { "Z","X","C","V","B","N","M","←" },
-  { "Espaço","OK" }
+  { "q","w","e","r","t","y","u","i","o","p" },
+  { "a","s","d","f","g","h","j","k","l" },
+  { "z","x","c","v","b","n","m","←" },
+  { "↑","Espaço","OK" }
 };
 
 void drawKeyboard() {
-  float kx = 100, ky = height - 250;
-  float kw = width - 200, kh = 200;
+  float kx = 12, ky = height - 260;
+  float kw = width - 20, kh = 250;
   float rowH = kh / keyRows.length;
   fill(cinzaEscuro);
   rect(0, height - 270, 1024, 270);
@@ -40,32 +41,59 @@ void drawKeyboard() {
     String[] row = keyRows[r];
     float cellW = kw / row.length;
     for (int c = 0; c < row.length; c++) {
-      float x = kx + c*cellW, y = ky + r*rowH;
-      fill(cinzaClaro);
-      rect(x, y, cellW-5, rowH-5, 5);
+      float x = kx + c * cellW;
+      float y = ky + r * rowH;
+      // Para a tecla de shift (aquela que alterna maiúsculas/minúsculas), mostra uma cor diferente se shiftActive estiver ligado
+      if (row[c].equals("↑")) {
+        fill(shiftActive ? azulEscuro : cinzaClaro);
+      } else {
+        fill(cinzaClaro);
+      }
+      rect(x, y, cellW - 5, rowH - 5, 5);
       fill(0);
       textAlign(CENTER, CENTER);
-      text(row[c], x + (cellW-5)/2, y + (rowH-5)/2);
+      String keyLabel = row[c];
+      // Se a tecla for uma letra e não for uma tecla especial ("←", "Espaço", "OK", "↑")
+      if (keyLabel.length() == 1 && Character.isLetter(keyLabel.charAt(0))) {
+        // Exibir de acordo com o estado de shiftActive:
+        keyLabel = shiftActive ? keyLabel.toUpperCase() : keyLabel.toLowerCase();
+      }
+      text(keyLabel, x + (cellW - 5) / 2, y + (rowH - 5) / 2);
     }
   }
 }
 
 void handleKeyboardClick() {
-  float kx = 100, ky = height - 250;
-  float kw = width - 200, kh = 200;
+  float kx = 12, ky = height - 260;
+  float kw = width - 20, kh = 250;
   float rowH = kh / keyRows.length;
   for (int r = 0; r < keyRows.length; r++) {
     String[] row = keyRows[r];
     float cellW = kw / row.length;
     for (int c = 0; c < row.length; c++) {
-      float x = kx + c*cellW, y = ky + r*rowH;
-      if (mouseX >= x && mouseX <= x+cellW-5 &&
-          mouseY >= y && mouseY <= y+rowH-5) {
+      float x = kx + c * cellW;
+      float y = ky + r * rowH;
+      if (mouseX >= x && mouseX <= x + cellW - 5 &&
+          mouseY >= y && mouseY <= y + rowH - 5) {
         String k = row[c];
-        if      (k.equals("OK"))       { keyboardVisible = false; }
-        else if (k.equals("Espaço"))   { appendChar(' ');      }
-        else if (k.equals("←"))        { backspaceChar();      }
-        else                           { appendChar(k.charAt(0)); }
+        if (k.equals("OK")) {
+          keyboardVisible = false;
+        } else if (k.equals("Espaço")) {
+          appendChar(' ');
+        } else if (k.equals("←")) {
+          backspaceChar();
+        } else if (k.equals("↑")) {
+          // Alterna o estado de shift (maiúsculas/minúsculas)
+          shiftActive = !shiftActive;
+        } else {
+          // Se for letra, utiliza uppercase se shiftActive estiver ligado, senão lowercase
+          char ch = k.charAt(0);
+          if (Character.isLetter(ch)) {
+            appendChar(shiftActive ? Character.toUpperCase(ch) : Character.toLowerCase(ch));
+          } else {
+            appendChar(ch);
+          }
+        }
         return;
       }
     }
@@ -73,17 +101,18 @@ void handleKeyboardClick() {
 }
 
 void appendChar(char ch) {
-  if (focusNome)           inputNomeEdit   += ch;
-  else if (focusVolume) {
+  if (focusNome) {
+    inputNomeEdit += ch;
+  } else if (focusVolume) {
     if (Character.isDigit(ch)) inputVolumeEdit += ch;
   }
 }
 
 void backspaceChar() {
   if (focusNome && inputNomeEdit.length() > 0)
-    inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length()-1);
+    inputNomeEdit = inputNomeEdit.substring(0, inputNomeEdit.length() - 1);
   else if (focusVolume && inputVolumeEdit.length() > 0)
-    inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length()-1);
+    inputVolumeEdit = inputVolumeEdit.substring(0, inputVolumeEdit.length() - 1);
 }
 
 
@@ -113,20 +142,20 @@ void setupTelaEditaPontos() {
     }
   }
 
-  // Definindo variáveis para tornar mais fácil a edicao
+  // Definindo variáveis para tornar mais fácil a edição
   float px = width - 630, py = 80, pw = 40, ph = height - 150;
   float dx = width - 420, dy = 380, dw = 380, dh = 80;
 
   // Scroll vertical 
   scrollUpButtonEdit    = new Button(true, px, py, pw, 40, "↑", azulEscuro, branco);
-  scrollDownButtonEdit  = new Button(true, px, py+ph-70, pw, 40, "↓", azulEscuro, branco);
+  scrollDownButtonEdit  = new Button(true, px, py + ph - 70, pw, 40, "↓", azulEscuro, branco);
 
   // Setas horizontais 
-  scrollLeftButtonEdit  = new Button(true, dx+10,     dy+(dh-40)/2, 40, 40, "←", azulEscuro, branco);
-  scrollRightButtonEdit = new Button(true, dx+dw-50,  dy+(dh-40)/2, 40, 40, "→", azulEscuro, branco);
+  scrollLeftButtonEdit  = new Button(true, dx + 10, dy + (dh - 40) / 2, 40, 40, "←", azulEscuro, branco);
+  scrollRightButtonEdit = new Button(true, dx + dw - 50, dy + (dh - 40) / 2, 40, 40, "→", azulEscuro, branco);
 
   // Botões SALVAR / CANCELAR
-  buttonSalvarEdit   = new Button(true, 600, 500, 180, 50, "SALVAR",  azulEscuro, branco);
+  buttonSalvarEdit   = new Button(true, 600, 500, 180, 50, "SALVAR", azulEscuro, branco);
   buttonCancelarEdit = new Button(true, 800, 500, 180, 50, "CANCELAR", cinzaClaro, branco);
 
   // Estado inicial da tela de editar os pontos
@@ -143,43 +172,55 @@ void setupTelaEditaPontos() {
 // ---------------------------------
 void desenhaTelaEditaPontos() {
   background(branco);
-  if (logo != null) image(logo, width - logo.width - 900, -40);
+  if (logo != null) {
+    image(logo, width - logo.width - 900, -40);
+  }
 
   // Título e campos de input
-  textSize(fontTitulo-15); fill(0); textAlign(CENTER);
+  textSize(fontTitulo - 15);
+  fill(0);
+  textAlign(CENTER);
   text("Editar ponto", 800, 100);
 
-  textSize(fontSubtitulo); fill(cinzaEscuro); textAlign(LEFT);
+  textSize(fontSubtitulo);
+  fill(cinzaEscuro);
+  textAlign(LEFT);
   text("Nome do Ponto:", 600, 160);
-  text("Volume (mL):",    600, 260);
-  if (edicaoColetaEdit) text("Pontos de dispensa associados:", 600, 360);
-  else                  text("Ponto de coleta correspondente:", 600, 360);
+  text("Volume (mL):", 600, 260);
+  if (edicaoColetaEdit)
+    text("Pontos de dispensa associados:", 600, 360);
+  else
+    text("Ponto de coleta correspondente:", 600, 360);
 
   // Caixa de texto
-  fill(branco); 
+  fill(branco);
   stroke(azulEscuro);
   rect(600, 170, 400, 35, 10);
   rect(600, 270, 400, 35, 10);
   noStroke();
-  fill(azulEscuro); 
-  textSize(16); 
+  fill(azulEscuro);
+  textSize(16);
   textAlign(LEFT, CENTER);
 
   // Nomes com cursor piscante
   String nomeVis = inputNomeEdit;
   String volVis  = inputVolumeEdit;
-  if (focusNome && (frameCount/30 % 2) == 0)    nomeVis += "|";
-  if (focusVolume && (frameCount/30 % 2) == 0)  volVis  += "|";
+  if (focusNome && (frameCount / 30 % 2) == 0)
+    nomeVis += "|";
+  if (focusVolume && (frameCount / 30 % 2) == 0)
+    volVis += "|";
   
-  text(nomeVis, 610, 170+35/2);
-  text(volVis,  610, 270+35/2);
+  text(nomeVis, 610, 170 + 35 / 2);
+  text(volVis, 610, 270 + 35 / 2);
 
   // — Painel lateral —
-  float px=width-950, py=70, pw=380, ph=height-150;
+  float px = width - 950, py = 70, pw = 380, ph = height - 150;
   fill(brancoBege);
   rect(px, py, pw, ph, 8);
-  fill(azulEscuro); textSize(20); textAlign(LEFT, CENTER);
-  text("Pontos Selecionados:", px+20, py+30);
+  fill(azulEscuro);
+  textSize(20);
+  textAlign(LEFT, CENTER);
+  text("Pontos Selecionados:", px + 20, py + 30);
 
   // Scroll vertical
   scrollUpButtonEdit.draw();
@@ -187,83 +228,86 @@ void desenhaTelaEditaPontos() {
 
   // Lista de pontos
   textSize(18);
-  float itemY=py+70, itemH=35;
+  float itemY = py + 70, itemH = 35;
   int start = editScrollOffset;
-  int end   = min(listaEditavel.size(), start + maxVisibleEdit);
-  for (int i=start; i<end; i++) {
+  int end = min(listaEditavel.size(), start + maxVisibleEdit);
+  for (int i = start; i < end; i++) {
     Ponto p = listaEditavel.get(i);
-    float y = itemY + (i-start)*itemH;
+    float y = itemY + (i - start) * itemH;
 
     // check button
-    stroke(azulEscuro); noFill();
-    rect(px+10, y-10, 20, 20, 3);
+    stroke(azulEscuro);
+    noFill();
+    rect(px + 10, y - 10, 20, 20, 3);
     noStroke();
+    // Permite selecionar e deselecionar: ao clicar no item já selecionado, os textos são limpos.
     if (i == editSelectedIndex) {
       fill(azulEscuro);
-      rect(px+12, y-8, 16, 16, 2);
+      rect(px + 12, y - 8, 16, 16, 2);
     }
-
+    
     // Pontos
-    fill(azulEscuro); 
+    fill(azulEscuro);
     textAlign(LEFT, CENTER);
-    text(p.nome, px+40, y);
+    text(p.nome, px + 40, y);
   }
   if (listaEditavel.isEmpty()) {
-    fill(cinzaClaro); 
+    fill(cinzaClaro);
     textSize(14);
-    text("Nenhum selecionado", px+80, py+70);
+    text("Nenhum selecionado", px + 80, py + 70);
   }
 
   // Painel inferior (Associações)
-  float dx=width-420, dy=380, dw=380, dh=80;
-  fill(brancoBege); 
+  float dx = width - 420, dy = 380, dw = 380, dh = 80;
+  fill(brancoBege);
   rect(dx, dy, dw, dh, 8);
 
   // monta listaAssociadas
   listaAssociadas.clear();
-  if (edicaoColetaEdit && editSelectedIndex>=0) {
+  if (edicaoColetaEdit && editSelectedIndex >= 0) {
     Ponto sel = listaEditavel.get(editSelectedIndex);
     for (Ponto d : listaPontosDispensa)
-      if (coordsIguais(d.coordsColeta, sel.coords)) 
+      if (coordsIguais(d.coordsColeta, sel.coords))
         listaAssociadas.add(d);
   } else if (!edicaoColetaEdit) {
     listaAssociadas.addAll(listaPontosColeta);
   }
 
-  textSize(14); 
+  textSize(14);
   textAlign(LEFT, CENTER);
   
   if (listaAssociadas.isEmpty()) {
     fill(cinzaClaro);
-    if (edicaoColetaEdit) text("Nenhuma dispensa associada", dx+85, dy+dh/2);
-    else                  text("Nenhuma coleta disponível",   dx+85, dy+dh/2);
-  } 
-  else {
-    assocIndex = constrain(assocIndex, 0, listaAssociadas.size()-1);
+    if (edicaoColetaEdit)
+      text("Nenhuma dispensa associada", dx + 85, dy + dh / 2);
+    else
+      text("Nenhuma coleta disponível", dx + 85, dy + dh / 2);
+  } else {
+    assocIndex = constrain(assocIndex, 0, listaAssociadas.size() - 1);
     
     if (!edicaoColetaEdit && editSelectedIndex >= 0) {
       Ponto selDisp = listaEditavel.get(editSelectedIndex);
       Ponto currColeta = listaAssociadas.get(assocIndex);
       if (coordsIguais(currColeta.coords, selDisp.coordsColeta) || uiColetaHighlight) {
         fill(azulEscuro);
-      }
-      else {
+      } else {
         fill(cinzaClaro);
       }
-    } 
-    
-    else if (!edicaoColetaEdit){
+    } else if (!edicaoColetaEdit) {
       fill(cinzaClaro);
-    }
-    
-    else{
+    } else {
       fill(azulEscuro);
     }
     
-    rect(((2*dx+dw)/2)-((textWidth(listaAssociadas.get(assocIndex).nome)+ 50)/2), dy + 5, textWidth(listaAssociadas.get(assocIndex).nome)+ 50, dh - 10, 10);
+    rect(((2 * dx + dw) / 2) - ((textWidth(listaAssociadas.get(assocIndex).nome) + 50) / 2),
+         dy + 5,
+         textWidth(listaAssociadas.get(assocIndex).nome) + 50,
+         dh - 10, 10);
     
     fill(branco);
-    text(listaAssociadas.get(assocIndex).nome, ((2*dx+dw)/2)-((textWidth(listaAssociadas.get(assocIndex).nome))/2), dy+dh/2);
+    text(listaAssociadas.get(assocIndex).nome,
+         ((2 * dx + dw) / 2) - ((textWidth(listaAssociadas.get(assocIndex).nome)) / 2),
+         dy + dh / 2);
   }
 
   // setas horizontais
@@ -275,11 +319,10 @@ void desenhaTelaEditaPontos() {
   buttonCancelarEdit.draw();
   backButton.draw();
   
-    // desenha por cima o teclado virtual, se estiver ativo
+  // desenha por cima o teclado virtual, se estiver ativo
   if (keyboardVisible) {
     drawKeyboard();
   }
-
 }
 
 // ---------------------------------
@@ -287,21 +330,23 @@ void desenhaTelaEditaPontos() {
 // ---------------------------------
 void mousePressedTelaEditaPontos() {
   // re-declara variaveis que serao utilizadas
-  float px=width-950, py=70;
-  float itemY=py+70, itemH=35;
+  float px = width - 950, py = 70;
+  float itemY = py + 70, itemH = 35;
 
   // foco nos inputs → abre nosso teclado embutido
   if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 170 && mouseY <= 205) {
-    focusNome = true; focusVolume = false;
+    focusNome = true;
+    focusVolume = false;
     keyboardVisible = true;
     return;
   }
   if (mouseX >= 600 && mouseX <= 1000 && mouseY >= 270 && mouseY <= 305) {
-    focusNome = false; focusVolume = true;
+    focusNome = false;
+    focusVolume = true;
     keyboardVisible = true;
     return;
   }
-  // se o teclado está visível, trata apenas ele
+  // se o teclado está visível, trata apenas dele
   if (keyboardVisible) {
     handleKeyboardClick();
     return;
@@ -309,74 +354,85 @@ void mousePressedTelaEditaPontos() {
   // ao clicar fora, fecha o teclado
   focusNome = focusVolume = false;
 
-
   // scroll vertical
   if (scrollUpButtonEdit.isMouseOver()) {
-    scrollUpButtonEdit.isPressed=true; return;
+    scrollUpButtonEdit.isPressed = true;
+    return;
   }
   if (scrollDownButtonEdit.isMouseOver()) {
-    scrollDownButtonEdit.isPressed=true; return;
+    scrollDownButtonEdit.isPressed = true;
+    return;
   }
 
-  // seleção lateral
-  int start=editScrollOffset, end=min(listaEditavel.size(), start+maxVisibleEdit);
-  for (int i=start; i<end; i++) {
-    float y = itemY + (i-start)*itemH;
+  // seleção lateral - permite selecionar e deselecionar
+  int start = editScrollOffset, end = min(listaEditavel.size(), start + maxVisibleEdit);
+  for (int i = start; i < end; i++) {
+    float y = itemY + (i - start) * itemH;
     // clique no quadrado
-    if (mouseX>=px+10 && mouseX<=px+30 &&
-        mouseY>=y-10 && mouseY<=y+10) {
-      editSelectedIndex=i;
-      Ponto s = listaEditavel.get(i);
-      inputNomeEdit   = s.nome;
-      inputVolumeEdit = str(s.volume);
-      assocIndex      = 0;
-      uiColetaHighlight = false;
+    if (mouseX >= px + 10 && mouseX <= px + 30 &&
+        mouseY >= y - 10 && mouseY <= y + 10) {
+      if (editSelectedIndex == i) {
+        // Se já está selecionado, deseleciona e limpa os campos de texto
+        editSelectedIndex = -1;
+        inputNomeEdit = "";
+        inputVolumeEdit = "";
+      } else {
+        editSelectedIndex = i;
+        Ponto s = listaEditavel.get(i);
+        inputNomeEdit = s.nome;
+        inputVolumeEdit = str(s.volume);
+        assocIndex = 0;
+        uiColetaHighlight = false;
+      }
       return;
     }
   }
 
   // scroll horizontal
   if (scrollLeftButtonEdit.isMouseOver()) {
-    scrollLeftButtonEdit.isPressed=true; return;
+    scrollLeftButtonEdit.isPressed = true;
+    return;
   }
   if (scrollRightButtonEdit.isMouseOver()) {
-    scrollRightButtonEdit.isPressed=true; return;
+    scrollRightButtonEdit.isPressed = true;
+    return;
   }
   
   if (!edicaoColetaEdit && editSelectedIndex >= 0 && !listaAssociadas.isEmpty()) {
-    float dx=width-420, dy=380, dw=380, dh=80;
+    float dx = width - 420, dy = 380, dw = 380, dh = 80;
     float w = textWidth(listaAssociadas.get(assocIndex).nome) + 50;
     float h = dh - 10;
-    float x = ((2*dx+dw)/2) - (w/2);
+    float x = ((2 * dx + dw) / 2) - (w / 2);
     float y = dy + 5;
     if (mouseX >= x && mouseX <= x + w &&
         mouseY >= y && mouseY <= y + h) {
       uiColetaHighlight = !uiColetaHighlight;
       return;
+    }
   }
-}
 
   // SALVAR
-  if (buttonSalvarEdit.isMouseOver() && editSelectedIndex>=0) {
+  if (buttonSalvarEdit.isMouseOver() && editSelectedIndex >= 0) {
     Ponto s = listaEditavel.get(editSelectedIndex);
-    s.nome   = inputNomeEdit;
+    s.nome = inputNomeEdit;
     s.volume = int(inputVolumeEdit);
     if (!edicaoColetaEdit && !listaAssociadas.isEmpty()) {
       Ponto c = listaAssociadas.get(assocIndex);
       s.coordsColeta = c.coords.clone();
     }
     // limpa flags originais **apenas agora**
-    for (Ponto p : listaPontosColeta)    p.selected = false;
-    for (Ponto p : listaPontosDispensa) p.selected = false;
+    for (Ponto p : listaPontosColeta)
+      p.selected = false;
+    for (Ponto p : listaPontosDispensa)
+      p.selected = false;
     // Limpa somente a seleção local e campos, não troca de tela
     editSelectedIndex = -1;
-    inputNomeEdit     = "";
-    inputVolumeEdit   = "";
-    assocIndex        = 0;
-    focusNome         = false;
-    focusVolume       = false;
+    inputNomeEdit = "";
+    inputVolumeEdit = "";
+    assocIndex = 0;
+    focusNome = false;
+    focusVolume = false;
     uiColetaHighlight = false;
-    
     return;
   }
 
@@ -384,20 +440,21 @@ void mousePressedTelaEditaPontos() {
   if (buttonCancelarEdit.isMouseOver()) {
     // Limpa somente a seleção local e campos, não troca de tela
     editSelectedIndex = -1;
-    inputNomeEdit     = "";
-    inputVolumeEdit   = "";
-    assocIndex        = 0;
-    focusNome         = false;
-    focusVolume       = false;
+    inputNomeEdit = "";
+    inputVolumeEdit = "";
+    assocIndex = 0;
+    focusNome = false;
+    focusVolume = false;
     return;
   }
-
 
   // VOLTAR
   if (backButton.isMouseOver()) {
     telaEditaPontos = false;
-    if (edicaoColetaEdit) telaPontosColeta = true;
-    else                  telaPontosDispensa = true;
+    if (edicaoColetaEdit)
+      telaPontosColeta = true;
+    else
+      telaPontosDispensa = true;
     return;
   }
 }
@@ -407,20 +464,21 @@ void mousePressedTelaEditaPontos() {
 // ---------------------------------
 void mouseReleasedTelaEditaPontos() {
   if (scrollUpButtonEdit.isPressed) {
-    if (editScrollOffset>0) editScrollOffset--;
-    scrollUpButtonEdit.isPressed=false;
+    if (editScrollOffset > 0)
+      editScrollOffset--;
+    scrollUpButtonEdit.isPressed = false;
   }
   if (scrollDownButtonEdit.isPressed) {
-    if (editScrollOffset<listaEditavel.size()-maxVisibleEdit)
+    if (editScrollOffset < listaEditavel.size() - maxVisibleEdit)
       editScrollOffset++;
-    scrollDownButtonEdit.isPressed=false;
+    scrollDownButtonEdit.isPressed = false;
   }
   if (scrollLeftButtonEdit.isPressed) {
     assocIndex--;
-    scrollLeftButtonEdit.isPressed=false;
+    scrollLeftButtonEdit.isPressed = false;
   }
   if (scrollRightButtonEdit.isPressed) {
     assocIndex++;
-    scrollRightButtonEdit.isPressed=false;
+    scrollRightButtonEdit.isPressed = false;
   }
 }

@@ -6,16 +6,16 @@
 Button AddColeta, AddDispensa, iniciaPip, pausaPip, pararPip;
 
 void setupTelaPipetagem() {
-
   AddColeta = new Button(true, 80, 250, 140, 110, "+ Ponto de \ncoleta", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   AddDispensa = new Button(true, 370, 390, 140, 110, "+ Ponto de \ndispensa", azulEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
   
-  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", canStart ? azulEscuro : cinzaEscuro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", canStart ? azulEscuro : cinzaEscuro, branco);
   
-  pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
-  pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco); // (square?, x, y, w, h, label, bgColor, textcolor)
+  // Initially, the pause and stop buttons are deactivated (as in the referenciamento screen).
+  pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+  pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
   
-    if (pipetagemRef) {
+  if (pipetagemRef) {
     listaPontosColeta.clear();
     pontosColeta = 0;
     listaPontosDispensa.clear();
@@ -30,51 +30,58 @@ void setupTelaPipetagem() {
     coordenadas[1] = 0;
     coordenadas[2] = 0;
     canStart = false;
-    
   }
-  
 }
 
-
 void desenhaTelaPipetagem() {
+  // Check if the pipetagem timer ran out. When the time is restarted,
+  // the state returns to the initial (referenciamento) status and the pause/stop buttons remain deactivated.
+  if (tempoRestante <= 0 && pipetagemAtiva) {
+    pipetagemAtiva = false;
+    pipetagemPausada = false;
+    tempoRestante = 50;  // reset the timer
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);
+    pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+    pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
+  }
+  
   if (logo != null) {
     image(logo, width - logo.width - 900, -40);
   }
   
   backButton.draw();
   
-  canStart = listaPontosColeta.size() > 0 && listaPontosDispensa.size() > 0; // Vendo se pode iniciar pipetagem
-  iniciaPip.bgColor = canStart && !pipetagemAtiva? azulEscuro : cinzaEscuro;
+  // Verify if pipetagem can be started (needs at least one collection and one dispensa point)
+  canStart = listaPontosColeta.size() > 0 && listaPontosDispensa.size() > 0;
+  iniciaPip.bgColor = canStart && !pipetagemAtiva ? azulEscuro : cinzaEscuro;
 
-  // Título
+  // Title
   fill(0);
   textSize(fontTitulo - 15);
   textAlign(LEFT, CENTER);
   text("Projeto Mecatrônico\nPipetadora automática", 80, 140);
 
-  // Modo atual
+  // Current mode
   textSize(fontSubtitulo);
   fill(cinzaEscuro);
   text("Modo atual:", 80, 200);
   fill(0);
   text("Manual", 180, 200);
 
-
-  // Desenha botao
+  // Draw buttons
   AddColeta.draw();
   AddDispensa.draw();
   iniciaPip.draw();
   pausaPip.draw();
   pararPip.draw();
 
-
-  // Seção total de coleta
+  // Collection points section
   desenhaSecaoPontos(250, 250, "Pontos totais de \ncoleta", listaPontosColeta.size());
 
-  // "+ Ponto de dispensa"
-  desenhaSecaoPontos(80, 390, "Pontos totais de \ndispensa",  listaPontosDispensa.size());
+  // Dispensa points section
+  desenhaSecaoPontos(80, 390, "Pontos totais de \ndispensa", listaPontosDispensa.size());
 
-  // Caixa para tempo restante
+  // Box for remaining time
   fill(branco);
   stroke(canStart ? azulEscuro : cinzaEscuro);
   strokeWeight(3);
@@ -88,17 +95,15 @@ void desenhaTelaPipetagem() {
   fill(azulEscuro);
   textSize(fontSubtitulo);
   text(canStart ? tempoRestante + " s" : "-", 900, 320);
-
 }
 
 //----------------------------------------------------------------------------------------
-//                           'Mouse pressed' for tela pipetagem 
+// 'Mouse pressed' for pipetagem screen 
 //----------------------------------------------------------------------------------------
 void mousePressedPipetagem() {
-  
   if (backButton != null && backButton.isMouseOver()) {
     backButton.isPressed = true;
-    return; // Handled
+    return;
   }
   
   if (AddColeta.isMouseOver()) {
@@ -127,86 +132,83 @@ void mousePressedPipetagem() {
 }
 
 //----------------------------------------------------------------------------------------
-//                           'Mouse released' for tela pipetagem 
+// 'Mouse released' for pipetagem screen 
 //----------------------------------------------------------------------------------------
 void mouseReleasedPipetagem() {
-  
-    if(iniciaPip.isPressed) {
-     pipetagemAtiva = true;
-     pipetagemPausada = false;
-     
-     
-     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
-     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
-     iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);  
-     
-  // Codigo para compreender se as coletas e dispensas estao associadas corretamente
+  if (iniciaPip.isPressed) {
+    pipetagemAtiva = true;
+    pipetagemPausada = false;
+    
+    // When starting pipetagem, activate the stop button
+    pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
+    // The pause button remains deactivated until explicitly needed
+    pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", azulEscuro, branco);
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", cinzaClaro, branco);
+    
+    // Send command via UART/I2C to the Nucleo boards
     String comando = gerarStringFormatoFinal();
-    //println(comando);         // Exibe no console do Processing
     if (porta != null) {
-        porta.write("REF\r");
-        porta.write(comando);  // Envia via UART/I2C para as placas Nucleo
-        println(comando);
+      porta.write("REF\r");
+      porta.write(comando);
+      println(comando);
     } else {
-        println("Erro: porta serial não inicializada");
+      println("Erro: porta serial não inicializada");
     }
   }
-
-  if (backButton.isPressed && backButton != null){
-   backButton.isPressed = false;
-   
-   telaPipetagem = false;
-   telaReferenciar = true;
+  
+  if (backButton.isPressed && backButton != null) {
+    backButton.isPressed = false;
+    
+    // Reset state and timer (returns to the initial state so that you can define new points)
+    pipetagemAtiva = false;
+    pipetagemPausada = false;
+    tempoRestante = 50;
+    pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
+    pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);
+    
+    telaPipetagem = false;
+    telaReferenciar = true;
   }
   
   if (AddColeta.isPressed) {
     AddColeta.isPressed = false;
-  
-    setupTelaPontosColeta(); //Inicializa o setup da prox. tela 
+    setupTelaPontosColeta();
     telaPipetagem = false;
     telaPontosColeta = true;
   }
-  
-  else if(AddDispensa.isPressed){
+  else if (AddDispensa.isPressed) {
     AddDispensa.isPressed = false;
-    
-    // Mudança de telas
     setupTelaPontosDispensa();
     telaPipetagem = false;
     telaPontosDispensa = true;
   }
-  
-  
-  else if(pausaPip.isPressed){
+  else if (pausaPip.isPressed) {
+    // When pausing, disable pipetagem and set pause/stop buttons to the deactivated state.
     pipetagemAtiva = false;
     pipetagemPausada = true;
-   
-   pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", azulEscuro, branco);
-   pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
-   iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);       
-
+    pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
+    pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);
   }
-  
-  else if (pararPip.isPressed){
+  else if (pararPip.isPressed) {
+    // When stopping, reset the state and timer and allow new pipetagem start.
     pararPip.isPressed = false;
-    
     pipetagemAtiva = false;
     pipetagemPausada = false;
     tempoRestante = 50;
-    
     pararPip = new Button(true, 790, 100, 140, 150, "Parar \npipetagem", cinzaClaro, branco);
     pausaPip = new Button(true, 620, 100, 140, 150, "|| \nPausa \npipetagem", cinzaClaro, branco);
-    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);     
+    iniciaPip = new Button(true, 600, 380, 350, 120, "INICIAR \nPIPETAGEM", azulEscuro, branco);
   }
-  
 }
+
 //----------------------------------------------------------------------------------------
-//                                 Funções de controle
+// Control functions
 //----------------------------------------------------------------------------------------
 void iniciarPipetagem() {
   pipetagemAtiva   = true;
   pipetagemPausada = false;
-  
 }
 
 void pausarPipetagem() {

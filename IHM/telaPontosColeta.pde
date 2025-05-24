@@ -393,6 +393,7 @@ void mouseReleasedTelaPontosColeta() {
        
        deleteSelectedPoints(listaPontosColeta, scrollOffset, "Coletas");
        pontosColeta = listaPontosColeta.size();
+       pontosDispensa = listaPontosDispensa.size();
     }
     
     if (editButtonColeta.isPressed){
